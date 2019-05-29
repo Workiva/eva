@@ -1,0 +1,20 @@
+version: '3.6'
+
+services:
+  # REPL container for running transactions against eva locally
+  lein:
+    container_name: lein
+    entrypoint: ["lein"]
+    image: pandeiro/lein
+    environment:
+      - USE_STD_OUT_TELEMETRY=false
+      - LOGBACK_LOG_LEVEL=DEBUG
+      - EVA_SERVER_MODE=TRANSACTORS_NODE
+      - EVA_TRANSACTORS_CONFIG=server/test-resources/eva/server/v2/local_transactors_test_config.clj
+      - EVA_TRANSACTOR_GROUPS=eva-test
+      - JAVA_OPTS=-Dlogback.configurationFile=/code/server/test-resources/eva/server/v2/local.xml -XX:MaxJavaStackTraceDepth=1000000
+    volumes:
+      - .:/code
+      - ~/.lein/:/root/.lein
+      - ~/.m2/:/root/.m2
+    working_dir: /code

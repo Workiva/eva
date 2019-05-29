@@ -1,0 +1,241 @@
+;; Copyright 2015-2019 Workiva Inc.
+;; 
+;; Licensed under the Eclipse Public License 1.0 (the "License");
+;; you may not use this file except in compliance with the License.
+;; You may obtain a copy of the License at
+;; 
+;;      http://opensource.org/licenses/eclipse-1.0.php
+;; 
+;; Unless required by applicable law or agreed to in writing, software
+;; distributed under the License is distributed on an "AS IS" BASIS,
+;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;; See the License for the specific language governing permissions and
+;; limitations under the License.
+
+{UnknownError
+ {:keyword :unknown-error/unknown-error
+  :doc "An uncategorized or unknown error occurred."
+  :code -1
+  :http-status 500} ;; internal server error
+ StorageError ;; 0-999
+ {:keyword :storage-error
+  :subtypes {StorageIOFailure
+             {:keyword :io-failure
+              :subtypes {IncompleteStorageResponse
+                         {:keyword :incomplete-response
+                          :doc "The backing store is returning incomplete data."
+                          :code 1
+                          :http-status 502} ;; gateway/proxy, invalid response from server
+                         StorageNotConnected
+                         {:keyword :not-connected
+                          :doc "Attempted to interact with storage without a connection"
+                          :code 2
+                          :http-status 503}}} ;; unavailable
+             StorageStateMismatch
+             {:keyword :state-mismatch
+              :subtypes {DataNotFound
+                         {:keyword :data-not-found
+                          :doc "The storage backend indicates no such data exists."
+                          :code 200
+                          :http-status 404}
+                         StaleLocalData
+                         {:keyword :stale-local-data
+                          :doc "Attempting to overwrite data based on stale information."
+                          :code 201
+                          :http-status 409}
+                         UnexpectedStorageReply
+                         {:keyword :unexpected-cas-result
+                          :doc "Storage operation succeeded, but result was unexpected."
+                          :code 202
+                          :http-status 500}}}
+             UnknownStorageError
+             {:keyword :unknown-error
+              :doc "An unknown error occurred while communicating with the backing store."
+              :code 999
+              :http-status 500}}} ;; internal server error
+ ConnectionManagementError ;; 1000-1999
+ {:keyword :connection-management
+  :subtypes {TransactorConnectionError
+             {:keyword :transactor-connection-error
+              :subtypes {TransactorNotFound
+                         {:keyword :transactor-not-found
+                          :doc "Transactor discovery failed. Could not locate transactor network address."
+                          :code 1000}
+                         TransactorConnectionFailure
+                         {:keyword :connection-failure
+                          :doc "Network connection to the transactor has been lost; please manually reconnect."
+                          :code 1001}}}
+             LocalConnectionError
+             {:keyword :local-connection-error
+              :subtypes {PeerShutdown
+                         {:keyword :peer-shutdown
+                          :doc "The peer has been shutdown and all its associated resources have been stopped."
+                          :code 1050}
+                         ConnectionInactive
+                         {:keyword :peer-connection-inactive
+                          :doc "The peer's connection object is not active or has been released. Please reconnect."
+                          :code 1100}
+                         PeerConnectionFailed
+                         {:keyword :peer-unable-to-connect
+                          :doc "The connect call was unable to acquire the requisite resources to establish a local database connection."
+                          :code 1120}}}
+             CatalogConnectionError
+             {:keyword :catalog-connection-error
+              :subtypes {CatalogNotFound
+                         {:keyword :catalog-not-found
+                          :doc "Catalog discovery failed. Could not locate catalog network address."
+                          :code 1200}
+                         BadCatalogResponse
+                         {:keyword :bad-catalog-response
+                          :doc "The catalog is preaching nonsense."
+                          :code 1201
+                          :http-status 502} ;; gateway/proxy, invalid response from server
+                         UnknownCatalogError
+                         {:keyword :unknown-catalog-error
+                          :doc "An unknown error occurred while communicating with the catalog."
+                          :code 1202
+                          :http-status 500}}}
+             StorageConnectionError
+             {:keyword :storage-connection-error
+              :doc "Failed to connect to storage."
+              :subtypes {StorageAuthFailure
+                         {:keyword :storage-authentication-failure
+                          :doc "Failed to authenticate with storage backend."
+                          :code 1301
+                          :http-status 500}}}}}
+ MessagingError ;; 2000-2999
+ {:keyword :messaging-error
+  :subtypes {MessagingIOFailure
+             {:keyword :bad-response
+              :doc "Bad response received while communicating with the Eva broker."
+              :code 2000
+              :http-status 502} ;; gateway/proxy, invalid response from server
+             UnknownMessagingError
+             {:keyword :unknown-error
+              :doc "Unknown error occurred while communicating with the Eva broker."
+              :code 2001
+              :http-status 500}
+             MessageDispatchFailure
+             {:keyword :dispatch
+              :doc "Failed to send message."
+              :code 2002
+              :http-status 500}
+             MessageReceptionFailure
+             {:keyword :reception
+              :doc "Failed to read message."
+              :code 2003
+              :http-status 500}}}
+ APIError ;; 3000-3999
+ {:keyword :api-error
+  :subtypes {IncorrectSyntax
+             {:keyword :incorrect-syntax
+              :subtypes {IncorrectTransactSyntax
+                         {:keyword :incorrect-transact-syntax
+                          :doc "Malformed transact request."
+                          :code 3000
+                          :http-status 400} ;; bad request
+                         IncorrectQuerySyntax
+                         {:keyword :incorrect-query-syntax
+                          :doc "Malformed query or rules."
+                          :code 3100}
+                         IncorrectPullSyntax
+                         {:keyword :incorrect-pull-syntax
+                          :doc "Malformed pull pattern."
+                          :code 3200}
+                         IncorrectConnectSyntax
+                         {:keyword :incorrect-connect-syntax
+                          :doc "Malformed connect input."
+                          :code 3300}
+                         IllegalTempID
+                         {:keyword :illegal-argument
+                          :doc "Generic illegal argument syntax error."
+                          :code 3500}}}
+             CoercionFailure
+             {:keyword :coercion-failure
+              :doc "Failed to coerce value"
+              :code 3900}
+             MethodNotYetImplemented
+             {:keyword :not-yet-implemented
+              :doc "This method is not yet implemented."
+              :code 3999
+              :http-status 501}}} ;; not yet implemented
+ DatastructureFailure ;; 4000-4999
+ {:keyword :datastructure-failure
+  :subtypes {DatastructureSerializationFailure
+             {:keyword :serialization-error
+              :doc "An error occurred while attempting to serialize an internal datastructure for storage."
+              :code 4000
+              :http-status 500} ;; internal server error
+             DatastructureDeserializationFailure
+             {:keyword :deserialization-error
+              :doc "An error occurred while attempting to deserialize an internal datastructure from storage."
+              :code 4001
+              :http-status 500} ;; internal server error
+             DatastructureCorruption
+             {:keyword :corruption-suspected
+              :doc "Possible corruption detected in an internal datastructure."
+              :code 4100
+              :http-status 500}}} ;; internal server error
+ ProcessingFailure ;; 5000-5999
+ {:keyword :processing-failure
+  :http-status 422 ;; Unprocessable Entity
+  :subtypes {TransactionPipelineFailure
+             {:keyword :transaction-pipeline
+              :subtypes {ModelConstraintViolation
+                         {:keyword :model-constraint-violation
+                          :doc "Transacting the tx-data would result in the violation of a schema constraint."
+                          :code 5000}
+                         TransactionFunctionInvalidReturn
+                         {:keyword :malformed-transaction-fn-return
+                          :doc "A transaction function had a bad return value."
+                          :code 5200}
+                         TransactionFunctionException
+                         {:keyword :failed-transaction-fn
+                          :doc "A transaction function threw an exception."
+                          :code 5201}
+                         UnknownTransactionFailure
+                         {:keyword :unknown-error
+                          :doc "Something bad happened in the transaction process."
+                          :code 5249}}}
+             DatalogInterpreterFailure
+             {:keyword :datalog-interpreter
+              :subtypes {UncomputableQuery
+                         {:keyword :uncomputable-query
+                          :doc "The datalog interpreter has rejected this query as uncomputable."
+                          :code 5250}
+                         UnknownQueryPredicate
+                         {:keyword :unknown-query-predicate
+                          :doc "Symbol does not map to known built-in or rule predicate."
+                          :code 5300}
+                         QueryFunctionNotFound
+                         {:keyword :query-function-not-found
+                          :doc "Unable to resolve a function symbol in the query or rules."
+                          :code 5350}
+                         QueryFunctionInvalidReturn
+                         {:keyword :unparsable-query-fn-return
+                          :doc "Unable to parse the return value of a function called in the query or rules."
+                          :code 5351}
+                         QueryFunctionFailure
+                         {:keyword :failed-query-fn
+                          :doc "A function called in the query threw an exception."
+                          :code 5352}
+                         InvalidQueryArgs
+                         {:keyword :invalid-query-arguments
+                          :doc "Invalid arguments to query."
+                          :code 5353}}}}}
+ TimeoutError ;; 6000-6099
+ {:keyword :timeout
+  :subtypes {StorageTimeout
+             {:keyword :backing-store
+              :doc "Requests for data from the backing store timed out."
+              :code 6001
+              :http-status 504} ;; gateway/proxy timeout ?
+             TransactionTimeout
+             {:keyword :transaction
+              :doc "A transaction timed out."
+              :code 6002
+              :http-status 504}}}
+ InternalComponentFailure ;; 10000
+ {:keyword :eva/internal-component-failure
+  :doc "Internal component failure."
+  :code 10000}}

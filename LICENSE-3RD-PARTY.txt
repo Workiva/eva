@@ -1,0 +1,42 @@
+-----------------------------------------------------------------------------
+This program uses implementation from Clojure which is distributed under the
+Eclipse Public License (EPLv1.0) at https://github.com/clojure/clojure with the
+following notice:
+
+Copyright (c) Rich Hickey. All rights reserved.
+The use and distribution terms for this software are covered by the
+Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
+which can be found in the file epl-v10.html in the 'third-party' folder of
+this distribution.
+By using this software in any fashion, you are agreeing to be bound by
+the terms of this license.
+You must not remove this notice, or any other, from this software.
+
+-----------------------------------------------------------------------------
+This program uses implementation from Datascript which is distributed under the
+Eclipse Public License (EPLv1.0) at https://github.com/tonsky/datascript with
+the following notice:
+
+Copyright © 2014–2018 Nikita Prokopov
+
+Licensed under Eclipse Public License
+
+-----------------------------------------------------------------------------
+This program uses implementation from again which is distributed under the
+Eclipse Public License (EPLv1.0) at https://github.com/liwp/again with the
+following notice:
+
+Copyright © 2014–2017 Listora, Lauri Pesonen
+
+Distributed under the Eclipse Public License either version 1.0 or(at your
+option) any later version.
+
+-----------------------------------------------------------------------------
+This program uses scripts from fabric8io-images/java which is
+distributed under the Apache 2.0 license.
+
+fabric8io-images/java
+Copyright 2009-2010 Roland Huss
+
+The included license can be found here:
+https://github.com/fabric8io-images/java/blob/master/LICENSE

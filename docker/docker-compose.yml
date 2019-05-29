@@ -1,0 +1,41 @@
+version: '3.6'
+
+services:
+  # use an eva mysql database with prepopulated data supporting data platform services
+  eva-db:
+    build: ./eva-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=notasecret
+      - MYSQL_DATABASE=eva
+      - MYSQL_USER=eva
+      - MYSQL_PASSWORD=notasecret
+
+  activemq:
+    image: webcenter/activemq:5.14.3
+    environment:
+      - ACTIVEMQ_ACTIVEMQ_USERS_EVA="eva"
+
+  eva-catalog-legacy:
+    # TODO - replace with dockerhub image
+    image: ${SKYNET_APPLICATION_EVA_CATALOG_LEGACY:-drydock.workiva.net/workiva/eva-catalog-legacy:latest-release}
+    healthcheck:
+      test: wget -q -O - http://eva-catalog-legacy:3000/status || exit 1
+
+  eva-legacy:
+    depends_on:
+      - activemq
+      - eva-db
+      - eva-catalog-legacy
+    # TODO - replace with dockerhub image
+    image: '${SKYNET_APPLICATION_EVA:-drydock.workiva.net/workiva/eva:latest-release}'
+    environment:
+      - EVA_BROKER_HOST=activemq
+      - EVA_TRANSACTORS_CONFIG=/local_transactors_test_config.clj
+      - LOGBACK_LOG_LEVEL=DEBUG
+      - EVA_SERVER_MODE=TRANSACTORS_NODE
+      - EVA_DEFAULT_TRANSACTOR=true
+      - LOGBACK_APPENDER=STDOUT
+      - JAVA_OPTS=-Dlogback.configurationFile=/local_logback.xml
+    healthcheck:
+      test: wget -q -O- http://eva-legacy:9999/status || exit 1
+    restart: on-failure

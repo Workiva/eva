@@ -1,0 +1,15 @@
+@startuml
+ManualEntry --|> Source
+ManualEntry : description
+ManualEntry : amount
+ReceiptItem --|> Source
+CSVRow --|> Source
+Expense --> "1" Source : comes from >
+Receipt *-- "n" ReceiptItem : items
+CSVImport *-- "n" CSVRow : rows
+Expense : amount
+Expense : made_at
+CSVRow : text
+ReceiptItem : text
+Source --> "1" Source : **overrides** >
+@enduml

@@ -1,0 +1,52 @@
+(let [broker {:broker-uri (env "EVA_BROKER_HOST" "tcp://activemq:61616")
+              :broker-type "org.apache.activemq.ActiveMQConnectionFactory"
+              :broker-user "eva"
+              :broker-password "eva"
+              :messenger-node-config/type :broker-uri}
+
+      storage (sql-storage {:subprotocol (env "EVA_STORAGE_SQL_DB_TYPE" "mysql")
+                            :subname     (format "//%s:%s/%s"
+                                           (env "EVA_STORAGE_SQL_HOST" "eva-db")
+                                           (env "EVA_STORAGE_SQL_PORT" 3306)
+                                           (env "EVA_STORAGE_SQL_DBNAME" "eva"))
+                            :classname   (env "EVA_STORAGE_SQL_DRIVER" "com.mysql.jdbc.Driver")
+                            :user (env "EVA_STORAGE_SQL_USER" "eva")
+                            :password (env "EVA_STORAGE_SQL_PASSWORD" "notasecret")})
+
+      service-1-partition #uuid "e9de2d72-7d6c-400f-ad40-25450f88eb02"
+      service-2-partition #uuid "167885a0-0114-4f07-92c4-a2e4e8edf829"
+      service-3-partition #uuid "e0e565d2-a9b3-440b-b503-76189f34f743"
+      service-4-partition #uuid "29448193-2df7-4cb4-b23b-a4e559aa30ae"
+      eva-client-test-partition #uuid "8230ebe8-84c0-45b8-b0d9-a5752c9fa031"
+      partition-1 #uuid "e9de2d72-7d6c-400f-ad40-25450f88eb02"
+      partition-2 #uuid "167885a0-0114-4f07-92c4-a2e4e8edf829"
+
+      service-1-db-uuid #uuid "f0db54a3-e033-4212-9fb4-cdb269a2da10"
+      service-2-db-uuid #uuid "4b847129-ae8a-472c-82c2-259bd2a433cc"
+      service-3-db-uuid #uuid "3abdb14e-1245-4212-ae79-6531c5df718b"
+      service-4-db-uuid #uuid "51d17d3b-8221-4f24-8bc5-a502de081038"
+      eva-client-test-db-uuid #uuid "8b9b56bc-25a9-4ecc-8edf-ee5fb4b93509"
+
+      service-1-database (database service-1-partition service-1-db-uuid)
+      service-2-database (database service-2-partition service-2-db-uuid)
+      service-3-database (database service-3-partition service-3-db-uuid)
+      service-4-database (database service-4-partition service-4-db-uuid)
+      eva-client-test-database (database eva-client-test-partition eva-client-test-db-uuid)
+
+      database-1 (database partition-1 #uuid "4b847129-ae8a-472c-82c2-259bd2a434cc")
+      database-2 (database partition-2 #uuid "3abdb14e-1245-4212-ae79-6531c5df728b")
+      ]
+
+
+  (-> (empty-catalog)
+    (add-flat-config "test-org" "rrs" "service-1" (flat-catalog-config broker storage service-1-database))
+    (add-flat-config "test-org" "rrs" "service-2" (flat-catalog-config broker storage service-2-database))
+    (add-flat-config "test-org" "rrs" "service-3" (flat-catalog-config broker storage service-3-database))
+    (add-flat-config "lookup"   "rrs" "service-4" (flat-catalog-config broker storage service-4-database))
+    (add-flat-config "test-tenant" "test-category" "test-label"  (flat-catalog-config broker storage eva-client-test-database))
+    (add-flat-config "workiva" "eva-test-1" "test-db-1" (flat-catalog-config broker storage database-1))
+    (add-flat-config "workiva" "eva-test-1" "test-db-2" (flat-catalog-config broker storage database-2))
+    (assign-transactor-group "eva-test" {:tenanat "workiva" :category "eva-test-1" :label "test-db-1"})
+    (assign-transactor-group "eva-test" {:tenanat "workiva" :category "eva-test-1" :label "test-db-2"})
+    )
+)
