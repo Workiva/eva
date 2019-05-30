@@ -1,0 +1,31 @@
+name: eva_legacy_tests
+
+image: drydock.workiva.net/workiva/smithy-runner-generator:340896
+
+run:
+  on-pull-request: true
+  when-branch-name-is: .+
+
+requires:
+  Workiva/eva: docker
+
+scripts:
+  # Spin up Docker containers
+  - docker-compose version
+  - >-
+     docker-compose -f docker/docker-compose.yml
+     -f docker/docker-compose.override.yml
+     -f docker/docker-compose.skynet.override.yml
+     up --build --force-recreate -d
+  - >-
+     docker-compose -f docker/docker-compose.yml
+     -f docker/docker-compose.override.yml
+     -f docker/docker-compose.skynet.override.yml
+     logs -f > /shared/logs/docker-compose.log &
+  # Wait for service to start up
+  - wget -O /dev/stdout --tries=10 --wait=2 --retry-connrefused --content-on-error http://eva-legacy:9999/status
+
+timeout: moderate
+
+artifacts:
+  - /shared/logs

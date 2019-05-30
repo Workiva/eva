@@ -1,0 +1,15 @@
+version: '3.6'
+
+services:
+  # REPL container for running transactions against eva locally
+  lein:
+    container_name: lein
+    entrypoint: ["lein"]
+    image: pandeiro/lein
+    environment:
+      - JAVA_OPTS=-Dlogback.configurationFile=/code/server/test-resources/eva/server/v2/local.xml
+    volumes:
+      - .:/code
+      - ~/.lein/:/root/.lein
+      - ~/.m2/:/root/.m2
+    working_dir: /code

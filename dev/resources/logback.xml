@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="5 seconds">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are assigned the type
+             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="CLJ-PRINTLN" class="eva.dev.logback.PrintAppender" />
+
+    <timestamp key="bySecond" datePattern="yyyyMMdd'T'HHmmss"/>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/${EVA_LOG_NAME:-eva-dev}.log</file>
+        <prudent>true</prudent>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>logs/${EVA_LOG_NAME:-eva-dev}.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- keep 30 days' worth of history capped at 3GB total size -->
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>3GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="SQLITE" class="ch.qos.logback.classic.db.DBAppender">
+        <connectionSource class="ch.qos.logback.core.db.DataSourceConnectionSource">
+            <dataSource class="org.sqlite.javax.SQLiteConnectionPoolDataSource">
+                <url>jdbc:sqlite:logs/${EVA_LOG_NAME:-eva-dev}.sqlite</url>
+            </dataSource>
+        </connectionSource>
+    </appender>
+
+    <logger name="eva.v2.storage" level="debug" />
+
+    <logger name="eva.query.dialect.translation.core" level="debug" />
+    <logger name="eva.query.core" level="debug" />
+
+    <logger name="eva" level="debug" />
+    <logger name="eva.indexes" level="debug" />
+    <logger name="eva.system" level="debug" />
+
+    <logger name="eva" level="debug" />
+    <logger name="eva.server" level="debug" />
+    <logger name="user" level="debug" />
+
+    <logger name="eva.v2.storage.sql" level="debug" />
+    <logger name="eva.system.transactor-manager" level="trace" />
+    <logger name="eva.system.peer" level="trace" />
+
+    <root level="${LOGBACK_LOG_LEVEL:-info}">
+        <appender-ref ref="${LOGBACK_APPENDER:-FILE}" />
+    </root>
+
+</configuration>

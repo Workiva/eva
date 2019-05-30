@@ -1,0 +1,27 @@
+*~
+.DS_Store
+
+# Created by .ignore support plugin (hsz.mobi)
+
+/target
+/classes
+/checkouts
+pom.xml
+pom.xml.asc
+*.class
+/.lein-*
+/.nrepl-port
+.hgignore
+.hg/
+.classpath
+.project
+.eastwood
+**/target/*
+*.iml
+.idea
+/data
+/logs
+/api-docs
+/internal-api-docs
+compose_remote*
+.release-trigger

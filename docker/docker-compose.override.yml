@@ -1,0 +1,20 @@
+version: '3.6'
+services:
+  eva-db:
+    ports:
+      - 3306:3306
+
+  eva-legacy:
+    environment:
+      - EVA_CATALOG_ADDRESS=http://eva-catalog-legacy:3000
+    ports:
+      - 9999:9999
+      - 61616:61616
+
+  eva-catalog-legacy:
+    ports:
+      - 3000:3000
+    environment:
+      - EVA_CATALOG_DATA=/catalog-config.edn
+    volumes:
+      - ${SKYNET_TESTING_PATH}/server/test-resources/eva/server/v2/catalog_config.edn:/catalog-config.edn
