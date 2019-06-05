@@ -1,15 +1,13 @@
 gen-docker:
-	# TODO - change tag to dockerhub
 	docker build \
 		-f workivabuild.Dockerfile \
-		-t drydock.workiva.net/workiva/eva:latest-release .
+		-t workiva/eva .
 
 gen-docker-no-tests:
-	# TODO - change tag to dockerhub
 	docker build \
 		--build-arg SKIP_TESTS=true \
 		-f workivabuild.Dockerfile \
-		-t drydock.workiva.net/workiva/eva:latest-release .
+		-t workiva/eva .
 
 run-docker:
 	./scripts/ci/pull_composes.sh
@@ -32,3 +30,6 @@ repl: run-docker ## Starts a Clojure REPL in the docker network
 
 transactor-docker:
 	docker-compose -f docker/docker-compose.transactor.yml run --rm lein with-profile +dev repl
+
+update-tocs:
+	./.circleci/scripts/update-tocs.sh

@@ -25,3 +25,4 @@ pom.xml.asc
 /internal-api-docs
 compose_remote*
 .release-trigger
+*.lock
