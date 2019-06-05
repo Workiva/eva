@@ -16,7 +16,7 @@ services:
       - ACTIVEMQ_ACTIVEMQ_USERS_EVA="eva"
 
   eva-catalog:
-    image: ${SKYNET_APPLICATION_EVA_CATALOG_LEGACY:-workiva/eva-catalog:latest-release}
+    image: ${SKYNET_APPLICATION_EVA_CATALOG_LEGACY:-drydock.workiva.net/workiva/eva-catalog:latest-release}
     healthcheck:
       test: wget -q -O - http://eva-catalog:3000/status || exit 1
 
@@ -25,7 +25,7 @@ services:
       - activemq
       - eva-db
       - eva-catalog
-    image: '${SKYNET_APPLICATION_EVA:-workiva/eva:latest-release}'
+    image: '${SKYNET_APPLICATION_EVA:-drydock.workiva.net/workiva/eva:latest-release}'
     environment:
       - EVA_BROKER_HOST=activemq
       - EVA_TRANSACTORS_CONFIG=/local_transactors_test_config.clj

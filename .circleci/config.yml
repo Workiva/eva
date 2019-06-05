@@ -60,7 +60,7 @@ jobs:
 
   verify_docs:
     docker:
-      - image: circleci/clojure:lein-2.8.3
+      - image: circleci/clojure:lein-2.8.3-node
     working_directory: ~/build
     steps:
       - restore_cache:
@@ -96,7 +96,7 @@ jobs:
           keys:
             - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
             - v1-dependencies-{{ checksum "project.clj" }}
-      - run: lein with-profile +deployment uberjar
+      - run: LEIN_SNAPSHOTS_IN_RELEASE=true lein with-profile +deployment uberjar
       - run: cp ./target/transactor.jar /tmp/transactor.jar
       - store_artifacts:
           path: ./target/transactor.jar
@@ -175,18 +175,21 @@ workflows:
               only: /.*/
       - verify_license_headers:
           requires:
+            - bundle_dependencies
             - checkout_code
           filters:
             tags:
               only: /.*/
       - verify_docs:
           requires:
+            - bundle_dependencies
             - checkout_code
           filters:
             tags:
               only: /.*/
       - unit_tests:
           requires:
+            - bundle_dependencies
             - checkout_code
           filters:
             tags:
@@ -200,7 +203,7 @@ workflows:
       - build_and_push_docker_image:
           context: DockerHub
           requires:
-            - verify_workiva_cli
+            - verify_workiva_ci
             - verify_license_headers
             - build_transactor
           # Only run on tagged builds starting with 'v'
@@ -213,7 +216,7 @@ workflows:
       - deploy_clojars:
           context: Clojars
           requires:
-            - verify_workiva_cli
+            - verify_workiva_ci
             - verify_license_headers
             - build_transactor
           # Only run on tagged builds starting with 'v'

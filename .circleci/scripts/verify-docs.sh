@@ -11,7 +11,8 @@ fi
 
 # Store MD5 of Committed Documentation
 MD5_ROOT_README_BEFORE=$(find README.md -type f -exec $md5Command {} \; | sort -k 2 | $md5Command)
-MD5_DOCS_BEFORE=$(find ./docs/api -type f -exec $md5Command {} \; | sort -k 2 | $md5Command)
+MD5_CLOJURE_DOCS_BEFORE=$(find ./docs/api/clojure -type f -exec $md5Command {} \; | sort -k 2 | $md5Command)
+MD5_JAVA_DOCS_BEFORE=$(find ./docs/api/java -type f -exec $md5Command {} \; | sort -k 2 | $md5Command)
 
 # Update Table of Contents
 ./.circleci/scripts/update-tocs.sh
@@ -20,7 +21,8 @@ lein docs
 
 # Calculate Later
 MD5_ROOT_README_AFTER=$(find README.md -type f -exec $md5Command {} \; | sort -k 2 | $md5Command)
-MD5_DOCS_AFTER=$(find ./docs/api -type f -exec $md5Command {} \; | sort -k 2 | $md5Command)
+MD5_CLOJURE_DOCS_AFTER=$(find ./docs/api/clojure -type f -exec $md5Command {} \; | sort -k 2 | $md5Command)
+MD5_JAVA_DOCS_AFTER=$(find ./docs/api/java -type f -exec $md5Command {} \; | sort -k 2 | $md5Command)
 
 # Verify root README.md
 if [ "$MD5_ROOT_README_BEFORE" != "$MD5_ROOT_README_AFTER" ]; then
@@ -29,8 +31,8 @@ if [ "$MD5_ROOT_README_BEFORE" != "$MD5_ROOT_README_AFTER" ]; then
     exit 1
 fi
 
-# Verify ./documentation content
-if [ "$MD5_DOCS_BEFORE" != "$MD5_DOCS_AFTER" ]; then
+# Verify ./docs/api content
+if [ "$MD5_CLOJURE_DOCS_BEFORE" != "$MD5_CLOJURE_DOCS_AFTER" ] || [ "$MD5_JAVA_DOCS_BEFORE" != "$MD5_JAVA_DOCS_AFTER" ]; then
     printf "${RED}Aborting, ./docs/api was not updated${NC}\n"
     printf "${RED}Run lein docs${NC}\n"
     exit 1
