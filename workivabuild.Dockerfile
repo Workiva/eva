@@ -25,9 +25,7 @@ ENV MAVEN_OPTS="-Xmx4096m"
 # Run Build
 # Used to Speed up Local Builds
 ARG SKIP_TESTS
-RUN echo "Running Build" \
- && ./scripts/ci/workiva-build.sh \
- && echo "Build Complete"
+RUN ./scripts/ci/workiva-build.sh
 
 # Artifacts
 ARG BUILD_ARTIFACTS_DOCUMENTATION=/build/eva-api-docs.tgz

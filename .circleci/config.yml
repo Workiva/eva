@@ -1,0 +1,228 @@
+version: 2.1
+
+commands:
+  early_return_for_forked_pull_requests:
+    description: >-
+      If this build is from a fork, stop executing the current job and return success.
+      This is useful to avoid steps that will fail due to missing credentials.
+    steps:
+      - run:
+          name: Early return if this build is from a forked PR
+          command: |
+            if [ -n "$CIRCLE_PR_NUMBER" ]; then
+              echo "Nothing to do for forked PRs, so marking this step successful"
+              circleci step halt
+            fi
+jobs:
+  checkout_code:
+    docker:
+      - image: circleci/clojure:lein-2.8.3
+    working_directory: ~/build
+    steps:
+      - checkout
+      - save_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/build
+
+  bundle_dependencies:
+    docker:
+      - image: circleci/clojure:lein-2.8.3-node
+    working_directory: ~/build
+    steps:
+      - restore_cache:
+          keys:
+            - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+            - v1-dependencies-{{ checksum "project.clj" }}
+            - v1-node-dependencies-{{ checksum "package.json" }}
+      - run: lein deps
+      - run: npm install
+      - save_cache:
+          key: v1-dependencies-{{ checksum "project.clj" }}
+          paths:
+            - ~/.m2
+      - save_cache:
+          key: v1-node-dependencies-{{ checksum "package.json" }}
+          paths:
+            - ~/node_modules
+
+  verify_license_headers:
+    docker:
+      - image: circleci/clojure:lein-2.8.3
+    working_directory: ~/build
+    steps:
+      - restore_cache:
+          keys:
+            - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+            - v1-dependencies-{{ checksum "project.clj" }}
+      - run: ./.circleci/scripts/verify-license-headers.sh "clj" "^;; Copyright 2015-[0-9]{4} Workiva Inc.$" project.clj profiles.clj
+      - run: ./.circleci/scripts/verify-license-headers.sh "java" "^// Copyright 2015-[0-9]{4} Workiva Inc.$"
+
+  verify_docs:
+    docker:
+      - image: circleci/clojure:lein-2.8.3-node
+    working_directory: ~/build
+    steps:
+      - restore_cache:
+          keys:
+            - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+            - v1-dependencies-{{ checksum "project.clj" }}
+            - v1-node-dependencies-{{ checksum "package.json" }}
+      # Verify Docs
+      - run: ./.circleci/scripts/verify-docs.sh
+      - run: cd ./docs/api && tar cvfz "../../eva-api-docs.tgz" ./
+      - run: mkdir -p ./artifacts/docs
+      - run: mv ./eva-api-docs.tgz ./artifacts/docs/
+      - store_artifacts:
+          path: ./artifacts
+
+  unit_tests:
+    docker:
+      - image: circleci/clojure:lein-2.8.3
+    working_directory: ~/build
+    steps:
+      - restore_cache:
+          keys:
+            - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+            - v1-dependencies-{{ checksum "project.clj" }}
+      - run: lein with-profile +aot,-dynamodb-local test
+
+  build_transactor:
+    docker:
+      - image: circleci/clojure:lein-2.8.3
+    working_directory: ~/build
+    steps:
+      - restore_cache:
+          keys:
+            - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+            - v1-dependencies-{{ checksum "project.clj" }}
+      - run: LEIN_SNAPSHOTS_IN_RELEASE=true lein with-profile +deployment uberjar
+      - run: cp ./target/transactor.jar /tmp/transactor.jar
+      - store_artifacts:
+          path: ./target/transactor.jar
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - transactor.jar
+
+  verify_workiva_ci:
+    docker:
+      - image: circleci/clojure:lein-2.8.3
+    working_directory: ~/build
+    steps:
+      - restore_cache:
+          keys:
+            - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - setup_remote_docker:
+          docker_layer_caching: false
+      - run: ./.circleci/scripts/verify-dockerfile.sh
+
+  # Verify that internal CI system will not fail after a merged PR
+  build_and_push_docker_image:
+    docker:
+      - image: circleci/clojure:lein-2.8.3
+    working_directory: ~/build
+    steps:
+      - restore_cache:
+          keys:
+            - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - setup_remote_docker:
+          docker_layer_caching: false
+      - attach_workspace:
+          at: /tmp/workspace
+      - run: mkdir -p ./target/
+      - run: mv /tmp/workspace/transactor.jar ./target/transactor.jar
+      - run: docker build -f transactor.Dockerfile -t workiva/eva:latest-release -t workiva/eva:$CIRCLE_TAG .
+      # TODO - waiting on account to be made
+      # - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
+      # - run: docker push xtvaser/salttoday:latest
+      # - run: docker push xtvaser/salttoday:$CIRCLE_TAG
+
+  deploy_clojars:
+    docker:
+      - image: circleci/clojure:lein-2.8.3
+    working_directory: ~/build
+    steps:
+      - early_return_for_forked_pull_requests
+      - restore_cache:
+          keys:
+            - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+            - v1-dependencies-{{ checksum "project.clj" }}
+      - run: mkdir -p ~/.lein
+      - run: cp ./.circleci/clojars/profiles.clj ~/.lein/profiles.clj
+      - run: LEIN_SNAPSHOTS_IN_RELEASE=true lein deploy clojars
+
+workflows:
+  eva_workflow:
+    jobs:
+      - checkout_code:
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /[0-9a-f]{7}_cr_no_smithy/
+      - bundle_dependencies:
+          requires:
+            - checkout_code
+          filters:
+            tags:
+              only: /.*/
+      - verify_workiva_ci:
+          requires:
+            - checkout_code
+          filters:
+            tags:
+              only: /.*/
+      - verify_license_headers:
+          requires:
+            - bundle_dependencies
+            - checkout_code
+          filters:
+            tags:
+              only: /.*/
+      - verify_docs:
+          requires:
+            - bundle_dependencies
+            - checkout_code
+          filters:
+            tags:
+              only: /.*/
+      - unit_tests:
+          requires:
+            - bundle_dependencies
+            - checkout_code
+          filters:
+            tags:
+              only: /.*/
+      - build_transactor:
+          requires:
+            - unit_tests
+          filters:
+            tags:
+              only: /.*/
+      - build_and_push_docker_image:
+          context: DockerHub
+          requires:
+            - verify_workiva_ci
+            - verify_license_headers
+            - build_transactor
+          # Only run on tagged builds starting with 'v'
+          # Therefore, releases MUST start with 'v'
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - deploy_clojars:
+          context: Clojars
+          requires:
+            - verify_workiva_ci
+            - verify_license_headers
+            - build_transactor
+          # Only run on tagged builds starting with 'v'
+          # Therefore, releases MUST start with 'v'
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/

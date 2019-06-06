@@ -23,7 +23,7 @@ scripts:
      -f docker/docker-compose.skynet.override.yml
      logs -f > /shared/logs/docker-compose.log &
   # Wait for service to start up
-  - wget -O /dev/stdout --tries=10 --wait=2 --retry-connrefused --content-on-error http://eva-legacy:9999/status
+  - wget -O /dev/stdout --tries=10 --wait=2 --retry-connrefused --content-on-error http://eva:9999/status
 
 timeout: moderate
 

@@ -33,7 +33,7 @@
                  [listora/again "0.1.0"]
                  [funcool/cats "2.1.0"]
                  ;;^:source-dep [clj-radix "0.1.0"]
-
+                 
                  [org.clojure/tools.cli "0.3.7"]
                  [org.clojure/java.jdbc "0.4.2"]
                  [org.clojure/core.unify "0.5.7"]
@@ -62,6 +62,13 @@
                  [com.workiva/flowgraph "0.1.1"]
                  [galdre/morphe "1.0.1"]
                  [com.workiva/quartermaster "0.1.1"]]
+
+  :deploy-repositories {"clojars"
+                        {:url "https://repo.clojars.org"
+                         :username :env/clojars_username
+                         :password :env/clojars_password
+                         :sign-releases false}}
+
   :source-paths      ["core/src"]
   :java-source-paths ["core/java-src"]
   :test-paths        ["core/test"]
@@ -121,10 +128,10 @@
                       :source-paths      ["server/src"]
                       :java-source-paths ["server/java-src"]
                       :test-paths        ["server/tests"]}
+
              :server-main [:server :aot
                            {:main ^:skip-aot eva.Server
                             :aot  [eva.server.v2]}]
-
 
              :aot {:aot [eva.api]}
 

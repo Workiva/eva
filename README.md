@@ -1,14 +1,40 @@
 <img src="./docs/images/logo/EVA-Logo.svg" width="100%" height="150">
 
-# Table of contents
+<!-- toc -->
 
-   * [What is Eva?](#what-is-eva)
-   * [Development](#development)
-   * [Configuration](#configuration)
-   * [About the Eva DataModel](#about-the-eva-datamodel)
-   * [Running with Docker](#running-with-docker)
-   * [Additional Resources](#additional-resources)
-   * [FAQ](#faq)
+- [What is Eva?](#what-is-eva)
+  * [Getting Started](#getting-started)
+- [Development](#development)
+  * [Required Tools](#required-tools)
+  * [Example: Hello World](#example-hello-world)
+  * [Project Structure](#project-structure)
+  * [Development Tasks](#development-tasks)
+    + [Running the Test Suite](#running-the-test-suite)
+- [Configuration](#configuration)
+- [About the Eva Data Model](#about-the-eva-data-model)
+  * [Entity-Attribute-Value (EAV)](#entity-attribute-value-eav)
+  * [Time-Aware](#time-aware)
+  * [Accumulative](#accumulative)
+  * [Atomic Consistency](#atomic-consistency)
+    + [Transactions](#transactions)
+      - [Using Object/Map form in transactions](#using-objectmap-form-in-transactions)
+  * [Schemas](#schemas)
+    + [Defining the schema for `:attribute1`:](#defining-the-schema-for-attribute1)
+- [Components](#components)
+- [Running with Docker](#running-with-docker)
+- [Additional Resources](#additional-resources)
+  * [FAQ](#faq)
+    + [Is this project or Workiva in any way affiliated with Cognitect?](#is-this-project-or-workiva-in-any-way-affiliated-with-cognitect)
+    + [Should I use Eva instead of Datomic?](#should-i-use-eva-instead-of-datomic)
+    + [What are the key differences between Eva and Datomic?](#what-are-the-key-differences-between-eva-and-datomic)
+    + [Why did Workiva build Eva?](#why-did-workiva-build-eva)
+    + [Why is Workiva open sourcing Eva?](#why-is-workiva-open-sourcing-eva)
+    + [What will Workiva's ongoing contributions to Eva be?](#what-will-workivas-ongoing-contributions-to-eva-be)
+  * [Maintainers and Contributors](#maintainers-and-contributors)
+    + [Active Maintainers](#active-maintainers)
+    + [Previous Contributors](#previous-contributors)
+
+<!-- tocstop -->
 
 # What is Eva?
 Eva is a distributed database-system implementing an entity-attribute-value data-model
@@ -26,7 +52,7 @@ If you are *brand new* to Eva, we suggest reading through this **entire** readme
 1. [Java Development Kit (JDK) v8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 2. [Leiningen Build Tool](http://leiningen.org)
 
-## Hello World
+## Example: Hello World
 First we kick off the repl with:
 ```
 lein repl
@@ -343,7 +369,7 @@ previous contributors on their personal time.
 
 Listed, in transaction log style, in order of addition to the project:
 
-- Ryan Heimbuch <ryan.heimbuch@workiva.com>
+- Ryan Heimbuch <rheimbuch@gmail.com>
 - Houston King <houston.king@workiva.com>
 - Timothy Dean <galdre@gmail.com>
 - Ross Hendrickson <ross.hendrickson@gmail.com>
