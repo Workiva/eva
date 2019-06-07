@@ -1,4 +1,4 @@
-(defproject com.workiva/eva "2.0.0"
+(defproject com.workiva/eva "2.0.1"
   :description "EVA"
   :url "https://github.com/Workiva/eva"
   :license {:name "ALL RIGHTS RESERVED"
