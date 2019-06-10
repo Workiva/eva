@@ -1,8 +1,7 @@
 (defproject com.workiva/eva "2.0.1"
-  :description "EVA"
+  :description "A distributed database-system implementing an entity-attribute-value data-model that is time-aware, accumulative, and atomically consistent"
   :url "https://github.com/Workiva/eva"
-  :license {:name "ALL RIGHTS RESERVED"
-            :url  ""}
+  :license {:name "Eclipse Public License 1.0"}
   :plugins [[lein-shell "0.5.0"]
             [lein-codox "0.10.2"]]
   :dependencies [[org.clojure/clojure "1.9.0"]
