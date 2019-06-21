@@ -1,13 +1,13 @@
 gen-docker:
 	docker build \
 		-f workivabuild.Dockerfile \
-		-t workiva/eva .
+		-t workivadocker/eva .
 
 gen-docker-no-tests:
 	docker build \
 		--build-arg SKIP_TESTS=true \
 		-f workivabuild.Dockerfile \
-		-t workiva/eva .
+		-t workivadocker/eva .
 
 run-docker:
 	./scripts/ci/pull_composes.sh

@@ -132,11 +132,10 @@ jobs:
           at: /tmp/workspace
       - run: mkdir -p ./target/
       - run: mv /tmp/workspace/transactor.jar ./target/transactor.jar
-      - run: docker build -f transactor.Dockerfile -t workiva/eva:latest-release -t workiva/eva:$CIRCLE_TAG .
-      # TODO - waiting on account to be made
-      # - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
-      # - run: docker push xtvaser/salttoday:latest
-      # - run: docker push xtvaser/salttoday:$CIRCLE_TAG
+      - run: docker build -f transactor.Dockerfile -t workivadocker/eva:latest-release -t workivadocker/eva:$CIRCLE_TAG .
+      - run: docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASS
+      - run: docker push workivadocker/eva:latest-release
+      - run: docker push workivadocker/eva:$CIRCLE_TAG
 
   deploy_clojars:
     docker:
