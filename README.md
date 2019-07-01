@@ -321,7 +321,7 @@ notable API differences [here](docs/differences.md).
 
 ### Should I use Eva instead of Datomic?
 
-If you are looking for an easy system to move to production quicky, almost
+If you are looking for an easy system to move to production quickly, almost
 certainly not. Eva is far less mature and has seen
 far less time in battle. Datomic Cloud is an amazing (and *supported*) product
 that is far easier to stand up and run with confidence. Eva is provided as-is.
