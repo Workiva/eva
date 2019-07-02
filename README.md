@@ -340,7 +340,7 @@ list check [here](docs/differences.md).
 
 ### Why did Workiva build Eva?
 
-Workvia's business model requires fine-grained and scalable
+Workiva's business model requires fine-grained and scalable
 multi-tenancy with a degree of control and flexibility that fulfill our
 own evolving and unique compliance requirements. Additionally, development
 on Eva began before many powerful features of Datomic were released, including
