@@ -1,15 +1,14 @@
 gen-docker:
-	# TODO - change tag to dockerhub
 	docker build \
 		-f workivabuild.Dockerfile \
-		-t drydock.workiva.net/workiva/eva:latest-release .
+		-t workivadocker/eva:latest-release .
 
 gen-docker-no-tests:
 	# TODO - change tag to dockerhub
 	docker build \
 		--build-arg SKIP_TESTS=true \
 		-f workivabuild.Dockerfile \
-		-t drydock.workiva.net/workiva/eva:latest-release .
+		-t workivadocker/eva:latest-release .
 
 run-docker:
 	./scripts/ci/pull_composes.sh

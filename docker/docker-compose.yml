@@ -15,9 +15,8 @@ services:
     environment:
       - ACTIVEMQ_ACTIVEMQ_USERS_EVA="eva"
 
-  eva-catalog-legacy:
-    # TODO - replace with dockerhub image
-    image: ${SKYNET_APPLICATION_EVA_CATALOG_LEGACY:-drydock.workiva.net/workiva/eva-catalog-legacy:latest-release}
+  eva-catalog:
+    image: workivadocker/eva-catalog:latest-release
     healthcheck:
       test: wget -q -O - http://eva-catalog-legacy:3000/status || exit 1
 
@@ -26,8 +25,8 @@ services:
       - activemq
       - eva-db
       - eva-catalog-legacy
-    # TODO - replace with dockerhub image
-    image: '${SKYNET_APPLICATION_EVA:-drydock.workiva.net/workiva/eva:latest-release}'
+      - eva-catalog
+    image: workivadocker/eva:latest-release
     environment:
       - EVA_BROKER_HOST=activemq
       - EVA_TRANSACTORS_CONFIG=/local_transactors_test_config.clj
