@@ -18,13 +18,12 @@ services:
   eva-catalog:
     image: workivadocker/eva-catalog:latest-release
     healthcheck:
-      test: wget -q -O - http://eva-catalog-legacy:3000/status || exit 1
+      test: wget -q -O - http://eva-catalog:3000/status || exit 1
 
-  eva-legacy:
+  eva:
     depends_on:
       - activemq
       - eva-db
-      - eva-catalog-legacy
       - eva-catalog
     image: workivadocker/eva:latest-release
     environment:

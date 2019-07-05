@@ -4,9 +4,9 @@ services:
     ports:
       - 3306:3306
 
-  eva-legacy:
+  eva:
     environment:
-      - EVA_CATALOG_ADDRESS=http://eva-catalog-legacy:3000
+      - EVA_CATALOG_ADDRESS=http://eva-catalog:3000
     ports:
       - 9999:9999
       - 61616:61616
