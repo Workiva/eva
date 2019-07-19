@@ -31,6 +31,7 @@ services:
       - EVA_TRANSACTORS_CONFIG=/local_transactors_test_config.clj
       - LOGBACK_LOG_LEVEL=DEBUG
       - EVA_SERVER_MODE=TRANSACTORS_NODE
+      - EVA_TRANSACTOR_GROUPS=eva-test
       - EVA_DEFAULT_TRANSACTOR=true
       - LOGBACK_APPENDER=STDOUT
       - JAVA_OPTS=-Dlogback.configurationFile=/local_logback.xml
