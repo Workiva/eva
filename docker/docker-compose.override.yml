@@ -11,10 +11,10 @@ services:
       - 9999:9999
       - 61616:61616
 
-#  eva-catalog:
-#    ports:
-#      - 3000:3000
-#    environment:
-#      - EVA_CATALOG_DATA=/catalog-config.edn
-#    volumes:
-#      - ${SKYNET_TESTING_PATH}/server/test-resources/eva/server/v2/catalog_config.edn:/catalog-config.edn
+  eva-catalog:
+    ports:
+      - 3000:3000
+    environment:
+      - EVA_CATALOG_DATA=/catalog-config.edn
+    volumes:
+      - ${SKYNET_TESTING_PATH:-..}/server/test-resources/eva/server/v2/catalog_config.edn:/catalog-config.edn
