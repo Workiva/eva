@@ -160,7 +160,7 @@
                     :java-source-paths ["dev/java-src"]
                     :test-paths        ["dev/test"]
                     :resource-paths    ["dev/resources" "core/test-resources" "server/test-resources"]
-                    :repl-options      {:init-ns eva.dev.repl}
+                    :repl-options      {:init-ns eva.dev.repl :timeout 120000}
                     :test-selectors    {:default (complement :slow)
                                         :slow    :slow}
                     :global-vars       {*warn-on-reflection* true}}

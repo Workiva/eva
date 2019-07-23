@@ -15,8 +15,8 @@ mkdir eva-catalog && cd eva-catalog
 git init && git remote add origin git@github.com:Workiva/eva-catalog.git
 git fetch --tags
 echo Checking out compose for eva-catalog at $(git describe --tags $(git rev-list --tags --max-count=1))
-git checkout $(git describe --tags $(git rev-list --tags --max-count=1)) -- docker-compose.yml
+git checkout $(git describe --tags $(git rev-list --tags --max-count=1)) -- docker/docker-compose.yml
 cd ../..
-cp compose_remote/eva-catalog/docker-compose.yml ./compose_remote/local-compose-eva-catalog.yml
+cp compose_remote/eva-catalog/docker/docker-compose.yml ./compose_remote/local-compose-eva-catalog.yml
 rm -rf compose_remote/eva-catalog
 echo local-compose-eva-catalog.yaml cloned to compose_remote dir

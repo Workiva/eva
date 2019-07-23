@@ -17,4 +17,4 @@ services:
     environment:
       - EVA_CATALOG_DATA=/catalog-config.edn
     volumes:
-      - ${SKYNET_TESTING_PATH}/server/test-resources/eva/server/v2/catalog_config.edn:/catalog-config.edn
+      - ${SKYNET_TESTING_PATH:-..}/server/test-resources/eva/server/v2/catalog_config.edn:/catalog-config.edn
