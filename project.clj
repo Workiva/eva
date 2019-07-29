@@ -1,4 +1,4 @@
-(defproject com.workiva/eva "2.0.3"
+(defproject com.workiva/eva "2.0.4"
   :description "A distributed database-system implementing an entity-attribute-value data-model that is time-aware, accumulative, and atomically consistent"
   :url "https://github.com/Workiva/eva"
   :license {:name "Eclipse Public License 1.0"}
