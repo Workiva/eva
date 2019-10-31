@@ -349,7 +349,7 @@
 ;; alternate strategy: system/exit
 (defn raise-skew-exception [local-now last-tx-inst skew-window]
   (tx-err/raise-clock-skew
-   "This transactor's clock is more than the allotted skew window behind the previous transaction log entry. Please report this exception to the Eva team."
+   "This transactor's clock is more than the allotted skew window behind the previous transaction log entry."
    {:local-now local-now
     :last-tx-inst last-tx-inst
     :skew-window skew-window
