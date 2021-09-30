@@ -29,7 +29,7 @@ RUN ./scripts/ci/workiva-build.sh
 
 # Artifacts
 ARG BUILD_ARTIFACTS_DOCUMENTATION=/build/eva-api-docs.tgz
-ARG BUILD_ARTIFACTS_ARTIFACTORY=/build/eva-*.jar
+ARG BUILD_ARTIFACTS_JAVA=/build/eva-*.jar
 
 # Prepare Veracode Artifact (Transactor & Client Library)
 FROM clojure:openjdk-8-lein-2.8.3-alpine AS veracode
