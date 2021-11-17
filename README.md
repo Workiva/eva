@@ -37,7 +37,7 @@
 <!-- tocstop -->
 
 # What is Eva?
-Eva is a distributed database-system implementing an entity-attribute-value data-model
+Eva i s a distributed database-system implementing an entity-attribute-value data-model
 that is *time-aware*, *accumulative*, and *atomically consistent*. Its API is
 by-and-large compatible with Datomic's. This software should be considered *alpha*
 for the purposes of quality and stability. Check out the [FAQ](#faq) for more info.
