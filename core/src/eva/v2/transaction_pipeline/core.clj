@@ -41,7 +41,7 @@
             [loom.alg :as la])
   (:import [java.util List Map]))
 
-(def writer-id (memoize #(java.util.UUID/randomUUID)))
+(def writer-id (memoize #(random-uuid)))
 
 (defrecord TxReport [db-before db-after tempids tx-data meta]
   TxReportProcessing

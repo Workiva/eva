@@ -31,7 +31,7 @@
          ^File tmpfile (sql/temp-file)
          path (.getPath tmpfile)
          dest-config {:local true
-                      :eva.v2.storage.value-store.core/partition-id (java.util.UUID/randomUUID)
+                      :eva.v2.storage.value-store.core/partition-id (random-uuid)
                       :eva.v2.storage.block-store.types/storage-type :eva.v2.storage.block-store.types/sql,
                       :eva.v2.storage.block-store.impl.sql/db-spec
                       {:classname "org.h2.Driver"

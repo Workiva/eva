@@ -23,14 +23,13 @@
             [eva.config :as config]
             [utiliva.core :refer [zip-to]]
             [eva.v2.fressian :refer [eva-only-read-handlers eva-only-write-handlers]]
-            [clojure.test :refer :all])
-  (:import [java.util UUID]))
+            [clojure.test :refer :all]))
 
 (defn memory-config
   []
   {::store-type/storage-type ::store-type/memory
-   ::memory/store-id (UUID/randomUUID)
-   ::value/partition-id (UUID/randomUUID)})
+   ::memory/store-id (random-uuid)
+   ::value/partition-id (random-uuid)})
 
 (defn- gen-value-str [size]
   (->> #(rand-nth "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")

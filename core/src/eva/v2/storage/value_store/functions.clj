@@ -20,7 +20,6 @@
             [recide.sanex :as sanex]
             [eva.error :refer [insist]])
   (:import [eva ByteString]
-           [java.util UUID]
            [java.nio ByteBuffer BufferUnderflowException]
            [java.io ByteArrayOutputStream]
            [java.util.zip GZIPOutputStream GZIPInputStream]
@@ -192,7 +191,7 @@
 
 (defn- gen-shard-ids
   [n k]
-  (repeatedly n #(str (UUID/randomUUID))))
+  (repeatedly n #(str (random-uuid))))
 
 (defn shard
   "Shards a block"

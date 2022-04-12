@@ -89,8 +89,8 @@
                   storage-conf
                   database-conf
                   {::type ::transaction-processor
-                   :eva.v2.system.transactor.core/id                 (java.util.UUID/randomUUID)
-                   :eva.v2.system.indexing.core/id                   (java.util.UUID/randomUUID)
+                   :eva.v2.system.transactor.core/id                 (random-uuid)
+                   :eva.v2.system.indexing.core/id                   (random-uuid)
                    :eva.v2.messaging.address/transaction-submission  (address "transact" database-conf)
                    :eva.v2.messaging.address/transaction-publication (address "transacted" database-conf)
                    :eva.v2.messaging.address/index-updates           (address "index-updates" database-conf)})]
@@ -304,8 +304,8 @@
              :eva.v2.messaging.address/transaction-submission  "eva.v2.transact.partition-1.database-1"
              :eva.v2.messaging.address/transaction-publication "eva.v2.transacted.partition-1.database-1"
              :eva.v2.messaging.address/index-updates           "eva.v2.index-updates.partition-1.database-1"
-             :eva.v2.system.transactor/id                      (java.util.UUID/randomUUID)
-             :eva.v2.system.indexing/id                        (java.util.UUID/randomUUID)
+             :eva.v2.system.transactor/id                      (random-uuid)
+             :eva.v2.system.indexing/id                        (random-uuid)
              })
 
      (merge broker-config storage-config
@@ -314,8 +314,8 @@
              :eva.v2.messaging.address/transaction-submission  "eva.v2.transact.partition-1.database-2"
              :eva.v2.messaging.address/transaction-publication "eva.v2.transacted.partition-1.database-2"
              :eva.v2.messaging.address/index-updates           "eva.v2.index-updates.partition-1.database-2"
-             :eva.v2.system.transactor/id                      (java.util.UUID/randomUUID)
-             :eva.v2.system.indexing/id                        (java.util.UUID/randomUUID)
+             :eva.v2.system.transactor/id                      (random-uuid)
+             :eva.v2.system.indexing/id                        (random-uuid)
              })
      ])
 

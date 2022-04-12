@@ -19,14 +19,13 @@
             [eva.v2.storage.block-store :as bs]
             [quartermaster.core :as qu]
             [eva.quartermaster-patches :as qp]
-            [eva.v2.storage.value-store.concurrent :as vsc])
-  (:import (java.util UUID)))
+            [eva.v2.storage.value-store.concurrent :as vsc]))
 
 (defn store-memory-config
   []
   {::store-type/storage-type ::store-type/memory
-   ::memory/store-id (UUID/randomUUID)
-   ::value/partition-id (UUID/randomUUID)})
+   ::memory/store-id (random-uuid)
+   ::value/partition-id (random-uuid)})
 
 (defmacro with-mem-value-store [name & body]
   `(qp/testing-for-resource-leaks

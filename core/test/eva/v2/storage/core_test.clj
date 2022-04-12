@@ -21,7 +21,6 @@
             [schema.test]
             [clojure.tools.namespace.repl :refer [refresh]])
   (:import (eva ByteString)
-           (java.util UUID)
            (java.util.concurrent CountDownLatch)))
 
 (use-fixtures :once schema.test/validate-schemas)
@@ -33,7 +32,7 @@
   (send-off notifier (fn [out] (binding [*out* out] (apply println args)) out)))
 
 (defn validate-core-operations
-  ([store] (validate-core-operations store (str (UUID/randomUUID)) (str (UUID/randomUUID))))
+  ([store] (validate-core-operations store (str (random-uuid)) (str (random-uuid))))
   ([store namespace id]
    (let [b0 (->Block namespace id {} (ByteString/copyFromUTF8 "hello world!"))]
      (is (true? (create-block store b0)))
@@ -60,8 +59,8 @@
 
 (defn validate-concurrent-create [store n]
   (let [start (CountDownLatch. n)
-        ns (str (UUID/randomUUID))
-        id (str (UUID/randomUUID))
+        ns (str (random-uuid))
+        id (str (random-uuid))
         actions (doall (for [i (range n)
                              :let [b (->Block ns id {} (ByteString/copyFromUTF8 (str i)))
                                    task (future
@@ -78,8 +77,8 @@
 
 (defn validate-concurrent-compare-and-set-block [store n]
   (let [start (CountDownLatch. (inc n))                     ;; latch = n+1 because we need to wait until we create the initial block
-        ns (str (UUID/randomUUID))
-        id (str (UUID/randomUUID))
+        ns (str (random-uuid))
+        id (str (random-uuid))
         b0 (->Block ns id {} (ByteString/copyFromUTF8 "init state"))
         cas-actions (doall (for [i (range n)
                              :let [b (->Block ns id {} (ByteString/copyFromUTF8 (str i)))

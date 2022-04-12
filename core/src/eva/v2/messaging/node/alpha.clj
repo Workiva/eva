@@ -23,8 +23,7 @@
             [quartermaster.core :as qu]
             [eva.v2.utils.completable-future :as completable-future]
             [com.stuartsierra.component :as component])
-  (:import (java.util UUID)
-           (java.lang AutoCloseable)))
+  (:import (java.lang AutoCloseable)))
 
 ;;;;;;;;;;
 ;; SPEC ;;
@@ -37,7 +36,7 @@
 ;;;;;;;;;;;;;;
 
 (defn ^:private build-node-id []
-  {::id (UUID/randomUUID)})
+  {::id (random-uuid)})
 
 (defonce ^:dynamic node-id (build-node-id))
 

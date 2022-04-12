@@ -19,7 +19,6 @@
            (com.google.common.collect MapMaker)
            (javax.jms Connection Session Queue MessageProducer MessageConsumer MessageListener Message Destination JMSException Topic)
            (java.lang AutoCloseable)
-           (java.util UUID)
            (java.time Instant)
            (java.util.function BiFunction)))
 
@@ -410,7 +409,7 @@
          message-protocol (:message-protocol r)
          write-data! (partial write-data-message message-protocol)
          fut-reply (CompletableFuture.)
-         cid (str (UUID/randomUUID))
+         cid (str (random-uuid))
          request-info {:log/level             :trace
                        :clojure.function/name `send-request!
                        ::request-queue        (jms/destination-name request-queue)

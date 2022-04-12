@@ -309,6 +309,6 @@
                :eva.v2.system.transactor.core/id
                #uuid "aaa92662-5082-4823-beaf-05116d8d6bb4",
                :messenger-node-config/type :broker-uri
-               :eva.v2.system.peer-connection.core/id (java.util.UUID/randomUUID)})
+               :eva.v2.system.peer-connection.core/id (random-uuid)})
   (require 'eva.v2.system.peer-connection.core)
   (def conn (eva.v2.system.peer-connection.core/connect config)))

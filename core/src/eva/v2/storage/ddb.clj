@@ -45,7 +45,7 @@
                                                     ReturnValue
                                                     ScalarAttributeType
                                                     WriteRequest)
-           (java.util Map UUID)
+           (java.util Map)
            (java.io IOException)
            (eva ByteString)
            (eva.error.v1 EvaException)
@@ -160,7 +160,7 @@
   ([strategy get-completed get-unprocessed completed-f f init-unprocessed]
    (retry-until-complete strategy nil nil nil get-completed get-unprocessed completed-f f init-unprocessed))
   ([strategy attempts-hist delay-hist unprocessed-items-hist get-completed get-unprocessed completed-f f init-unprocessed]
-   (let [rid (UUID/randomUUID)
+   (let [rid (random-uuid)
          completed (volatile! (completed-f))
          retries (volatile! 0)]
      (loop [[delay & strategy] strategy

@@ -41,7 +41,6 @@
             [eva.v2.storage.local :refer [init-h2-db]]
             [com.stuartsierra.component :as c])
   (:import [java.io File]
-           [java.util UUID]
            [java.util.concurrent CountDownLatch]))
 
 (defn base-config
@@ -49,9 +48,9 @@
   (merge {::address/transaction-submission "submit-addr"
           ::address/transaction-publication "pub-addr"
           ::address/index-updates "indexes"
-          ::peer/id (java.util.UUID/randomUUID)
-          ::transactor/id (UUID/randomUUID)
-          ::indexing/id (UUID/randomUUID)
+          ::peer/id (random-uuid)
+          ::transactor/id (random-uuid)
+          ::indexing/id (random-uuid)
           ::database/id database-id}
          storage-config
          messenger-config))
@@ -60,7 +59,7 @@
   [database-id]
   {::store-type/storage-type ::store-type/memory
    ::memory/store-id database-id
-   ::values/partition-id (java.util.UUID/randomUUID)})
+   ::values/partition-id (random-uuid)})
 
 (defn messenger-config
   []
@@ -80,7 +79,7 @@
 
 (deftest peer-reconnect
   (qp/testing-for-resource-leaks
-   (let [database-id (UUID/randomUUID)
+   (let [database-id (random-uuid)
          config (base-config database-id (memory-config database-id) (messenger-config))
          vs (qu/acquire vs-manager/value-store-manager :random config)
          database-info (catalog/initialize-database* vs database-id)
@@ -145,7 +144,7 @@
        transactor/transactor-manager
        {:discriminator
         (fn [_ config] [(::tag config) (::database/id config) (::transactor/id config)])}]
-      (let [database-id (UUID/randomUUID)
+      (let [database-id (random-uuid)
             config (base-config database-id (sql-config database-id) (messenger-config))
             vs (qu/acquire vs-manager/value-store-manager :random config)
             database-info (catalog/initialize-database* vs database-id)
@@ -246,7 +245,7 @@
 
      peer/peer-connection-manager
      {:discriminator (fn [_ config] [(::tag config) (::database/id config)])}]
-    (let [database-id (UUID/randomUUID)
+    (let [database-id (random-uuid)
           config (base-config database-id (sql-config database-id) (messenger-config))
           vs (qu/acquire vs-manager/value-store-manager :random config)
           database-info (catalog/initialize-database* vs database-id)
@@ -279,7 +278,7 @@
     [node/messenger-nodes {:constructor (fn [_ _] (fake-messenger (constantly true)))}
      transactor/transactor-manager
      {:discriminator (fn [user-id config] [user-id (::database/id config) (::transactor/id config)])}]
-    (let [database-id (UUID/randomUUID)
+    (let [database-id (random-uuid)
           config (base-config database-id (sql-config database-id) (messenger-config))
           vs (qu/acquire vs-manager/value-store-manager :random config)
           database-info (catalog/initialize-database* vs database-id)
@@ -309,8 +308,8 @@
   (let [^File tmpfile (sql/temp-file)
         path (.getPath tmpfile)
         config {:autogenetic              true
-                ::database/id             (UUID/randomUUID)
-                ::values/partition-id     (UUID/randomUUID)
+                ::database/id             (random-uuid)
+                ::values/partition-id     (random-uuid)
                 ::store-type/storage-type ::store-type/sql
                 ::sql/db-spec             (sql/h2-db-spec path)}]
     (qp/testing-for-resource-leaks
@@ -328,8 +327,8 @@
                   (release conn2)))))))
 
 (deftest distinct-local-connections
-  (let [uuid-1 (UUID/randomUUID)
-        uuid-2 (UUID/randomUUID)
+  (let [uuid-1 (random-uuid)
+        uuid-2 (random-uuid)
         config-1a {:autogenetic true
                   ::database/id uuid-1}
         config-1b {:autogenetic true
@@ -372,7 +371,7 @@
          {:discriminator
           (fn [user-id config] [user-id (::database/id config) (::id config) (::tag config)])}]
 
-        (let [database-id (UUID/randomUUID)
+        (let [database-id (random-uuid)
               config (base-config database-id (sql-config database-id) (messenger-config))
               vs (qu/acquire vs-manager/value-store-manager :random config)
               database-info (catalog/initialize-database* vs database-id)

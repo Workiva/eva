@@ -32,7 +32,6 @@
 
   (:import (javax.jms Session Message ExceptionListener Connection)
            (java.lang AutoCloseable)
-           (java.util UUID)
            (clojure.lang ArityException)))
 
 ;;;;;;;;;;
@@ -45,7 +44,7 @@
 ;; END SPEC ;;
 ;;;;;;;;;;;;;;
 
-(defonce ^:dynamic node-id {::id (UUID/randomUUID)})
+(defonce ^:dynamic node-id {::id (random-uuid)})
 
 (def ^:private ^:dynamic *default-broker-type* "org.apache.activemq.artemis.jms.client.ActiveMQJMSConnectionFactory")
 

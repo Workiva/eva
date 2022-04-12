@@ -33,16 +33,16 @@
   (let [broker-uri (broker/broker-uri)
         messenger-config {:messenger-node-config/type :broker-uri
                           :broker-uri broker-uri}
-        database-id (java.util.UUID/randomUUID)
+        database-id (random-uuid)
         storage-config {::store-type/storage-type ::store-type/memory
                         ::memory/store-id database-id
-                        ::values/partition-id (java.util.UUID/randomUUID)}
+                        ::values/partition-id (random-uuid)}
         base-config (merge {::address/transaction-submission "submit-addr"
                             ::address/transaction-publication "pub-addr"
                             ::address/index-updates "indexes"
-                            ::peer/id (java.util.UUID/randomUUID)
-                            ::transactor/id (java.util.UUID/randomUUID)
-                            ::indexing/id (java.util.UUID/randomUUID)
+                            ::peer/id (random-uuid)
+                            ::transactor/id (random-uuid)
+                            ::indexing/id (random-uuid)
                             ::database/id database-id}
                            storage-config
                            messenger-config)
@@ -101,16 +101,16 @@
      (let [broker-uri (broker/broker-uri)
            messenger-config {:messenger-node-config/type :broker-uri
                              :broker-uri broker-uri}
-           database-id (java.util.UUID/randomUUID)
+           database-id (random-uuid)
            storage-config {::store-type/storage-type ::store-type/memory
                            ::memory/store-id database-id
-                           ::values/partition-id (java.util.UUID/randomUUID)}
+                           ::values/partition-id (random-uuid)}
            full-config (merge {::address/transaction-submission "submit-addr"
                                ::address/transaction-publication "pub-addr"
                                ::address/index-updates "indexes"
-                               ::peer/id (java.util.UUID/randomUUID)
-                               ::transactor/id (java.util.UUID/randomUUID)
-                               ::indexing/id (java.util.UUID/randomUUID)
+                               ::peer/id (random-uuid)
+                               ::transactor/id (random-uuid)
+                               ::indexing/id (random-uuid)
                                ::database/id database-id}
                               storage-config
                               messenger-config)
@@ -206,7 +206,7 @@
   (qp/testing-for-resource-leaks
    (eva.config/with-overrides {:eva.database.indexes.max-tx-delta 30
                                :eva.v2.storage.value-cache-size 1}
-     (let [database-id (java.util.UUID/randomUUID)
+     (let [database-id (random-uuid)
            conn (connect {:local true})]
        (try (let [txs         100
                   tx-size     4
@@ -291,28 +291,28 @@
   (testing "original bug reproduction"
     (qp/testing-for-resource-leaks
      (let [conn1 (eva/connect {:local true
-                               :eva.v2.database.core/id (java.util.UUID/randomUUID)
-                               :eva.v2.storage.value-store.core/partition-id (java.util.UUID/randomUUID)})
+                               :eva.v2.database.core/id (random-uuid)
+                               :eva.v2.storage.value-store.core/partition-id (random-uuid)})
 
            conn2 (eva/connect {:local true
-                               :eva.v2.database.core/id (java.util.UUID/randomUUID)
-                               :eva.v2.storage.value-store.core/partition-id (java.util.UUID/randomUUID)})]
+                               :eva.v2.database.core/id (random-uuid)
+                               :eva.v2.storage.value-store.core/partition-id (random-uuid)})]
        (eva/release conn1)
        (let [conn3 (eva/connect {:local true
-                                 :eva.v2.database.core/id (java.util.UUID/randomUUID)
-                                 :eva.v2.storage.value-store.core/partition-id (java.util.UUID/randomUUID)})]
+                                 :eva.v2.database.core/id (random-uuid)
+                                 :eva.v2.storage.value-store.core/partition-id (random-uuid)})]
          (eva/release conn2)
          (eva/release conn3)))))
 
   (testing "variation on original bug"
     (qp/testing-for-resource-leaks
      (let [config {:local true
-                   :eva.v2.database.core/id (java.util.UUID/randomUUID)
-                   :eva.v2.storage.value-store.core/partition-id (java.util.UUID/randomUUID)}
+                   :eva.v2.database.core/id (random-uuid)
+                   :eva.v2.storage.value-store.core/partition-id (random-uuid)}
            conn1 (eva/connect config)
            conn2 (eva/connect {:local true
-                               :eva.v2.database.core/id (java.util.UUID/randomUUID)
-                               :eva.v2.storage.value-store.core/partition-id (java.util.UUID/randomUUID)})]
+                               :eva.v2.database.core/id (random-uuid)
+                               :eva.v2.storage.value-store.core/partition-id (random-uuid)})]
        (eva/release conn1)
        (try
          (let [conn1' (eva/connect config)]

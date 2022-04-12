@@ -22,14 +22,13 @@
             [eva.v2.storage.block-store.types :as store-type]
             [eva.v2.storage.block-store.impl.memory :as memory]
             [eva.v2.storage.value-store.core :as value]
-            [eva.v2.storage.value-store :refer [put-value]])
-  (:import [java.util UUID]))
+            [eva.v2.storage.value-store :refer [put-value]]))
 
 (defn memory-config
   []
   {::store-type/storage-type ::store-type/memory
-   ::memory/store-id (UUID/randomUUID)
-   ::value/partition-id (UUID/randomUUID)})
+   ::memory/store-id (random-uuid)
+   ::value/partition-id (random-uuid)})
 
 (deftest var-unit-tests
   (let [config (memory-config)]

@@ -36,8 +36,7 @@
             [eva.print-ext]
             [clojure.spec.alpha :as s]
             [com.stuartsierra.component :as c])
-  (:import [java.util UUID]
-           [eva Connection]))
+  (:import [eva Connection]))
 
 ;;;;;;;;;;
 ;; SPEC ;;
@@ -68,8 +67,8 @@
 
 (def version 2)
 
-(def ^:dynamic *default-database-id* (UUID/randomUUID))
-(def ^:dynamic *default-partition-id* (UUID/randomUUID))
+(def ^:dynamic *default-database-id* (random-uuid))
+(def ^:dynamic *default-partition-id* (random-uuid))
 
 (defn memory-storage-config
   [config]
@@ -110,7 +109,7 @@
 
 (defn generate-messaging-configuration
   [config]
-  (let [uuid (UUID/randomUUID)]
+  (let [uuid (random-uuid)]
     (merge config
            {:messenger-node-config/type :local-messenger-node
             ::address/transaction-submission (str uuid "-submit-addr")
@@ -118,13 +117,13 @@
             ::address/index-updates (str uuid "-index-addr")})))
 
 (defn generate-peer-configuration [config]
-  (merge config {::peer/id (UUID/randomUUID)}))
+  (merge config {::peer/id (random-uuid)}))
 
 (defn generate-transactor-configuration [config]
-  (merge config {::transactor/id (UUID/randomUUID)}))
+  (merge config {::transactor/id (random-uuid)}))
 
 (defn generate-indexing-configuration [config]
-  (merge config {::indexing/id (UUID/randomUUID)}))
+  (merge config {::indexing/id (random-uuid)}))
 
 (defrecord AutogeneticConnection [resource-id
                                   config

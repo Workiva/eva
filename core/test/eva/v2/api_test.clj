@@ -41,7 +41,6 @@
            [eva Util]
            [eva.error.v1 EvaException EvaErrorCode]
            [java.util.function Function]
-           [java.util UUID]
            (java.io File)))
 
 (defn test-query [_ _ connection]
@@ -82,9 +81,9 @@
   (merge {::address/transaction-submission "submit-addr"
           ::address/transaction-publication "pub-addr"
           ::address/index-updates "indexes"
-          ::peer/id (java.util.UUID/randomUUID)
-          ::transactor/id (java.util.UUID/randomUUID)
-          ::indexing/id (java.util.UUID/randomUUID)
+          ::peer/id (random-uuid)
+          ::transactor/id (random-uuid)
+          ::indexing/id (random-uuid)
           ::database/id database-id}
          storage-config
          messenger-config))
@@ -98,7 +97,7 @@
   [database-id]
   {::store-type/storage-type ::store-type/memory
    ::memory/store-id database-id
-   ::values/partition-id (java.util.UUID/randomUUID)})
+   ::values/partition-id (random-uuid)})
 
 (defn h2-config
   [database-id]
@@ -125,14 +124,14 @@
 
 (deftest unit:query
   (testing "with in-memory connection"
-    (let [database-id (UUID/randomUUID)]
+    (let [database-id (random-uuid)]
       (qp/testing-for-resource-leaks
        (test-stuff database-id
                    (memory-config database-id)
                    (messenger-config)
                    test-query))))
   (testing "with transactor and local-storage"
-    (let [database-id (UUID/randomUUID)]
+    (let [database-id (random-uuid)]
       (qp/testing-for-resource-leaks
        (test-stuff database-id
                    (h2-config database-id)
@@ -140,7 +139,7 @@
                    test-query)))))
 
 (deftest unit:log-tx-range
-  (let [database-id (UUID/randomUUID)]
+  (let [database-id (random-uuid)]
     (qp/testing-for-resource-leaks
      (test-stuff database-id
                  (memory-config database-id)
@@ -155,7 +154,7 @@
                      (is (= 2 (-> txr second :data count)))))))))
 
 (deftest unit:datoms-and-query-truthiness
-  (let [database-id (UUID/randomUUID)]
+  (let [database-id (random-uuid)]
     (qp/testing-for-resource-leaks
      (test-stuff database-id
                  (memory-config database-id)
@@ -200,7 +199,7 @@
                        )))))))
 
 (deftest unit:lookup-references
-  (let [database-id (UUID/randomUUID)]
+  (let [database-id (random-uuid)]
     (qp/testing-for-resource-leaks
      (test-stuff database-id
                  (memory-config database-id)
@@ -228,7 +227,7 @@
                      (is (= nil (entid dbase [:db/ident :doesnt-exist])))))))))
 
 (deftest unit:in-mem-db-evicts-indexes
-  (let [database-id (UUID/randomUUID)
+  (let [database-id (random-uuid)
         connect-cache-count (count @(:cache-atom global-index-cache))]
     (qp/testing-for-resource-leaks
      (test-stuff database-id
@@ -241,7 +240,7 @@
            (count @(:cache-atom global-index-cache))))))
 
 (deftest unit:transaction-timeout
-  (let [database-id (UUID/randomUUID)]
+  (let [database-id (random-uuid)]
     (qp/testing-for-resource-leaks
      (config/with-overrides {:eva.transact-timeout 0}
        (test-stuff database-id

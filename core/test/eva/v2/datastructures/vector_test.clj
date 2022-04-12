@@ -23,8 +23,7 @@
             [eva.v2.storage.value-store :as vs]
             [eva.v2.storage.block-store.types :as store-type]
             [eva.v2.storage.block-store.impl.memory :as memory])
-  (:import [eva.v2.datastructures.vector PersistedVector]
-           [java.util UUID]))
+  (:import [eva.v2.datastructures.vector PersistedVector]))
 
 (defn maybe-write [name v next-val fail-atom]
   (try*
@@ -37,8 +36,8 @@
 (defn memory-config
   []
   {::store-type/storage-type ::store-type/memory
-   ::memory/store-id (UUID/randomUUID)
-   ::value/partition-id (UUID/randomUUID)})
+   ::memory/store-id (random-uuid)
+   ::value/partition-id (random-uuid)})
 
 (defn open-and-transact [todo {:as agt :keys [vec-id name store fail-atom]}]
   (try*

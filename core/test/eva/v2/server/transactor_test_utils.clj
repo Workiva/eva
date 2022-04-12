@@ -15,13 +15,12 @@
 (ns eva.v2.server.transactor-test-utils
   (:require [eva.api :as api]
             [eva.quartermaster-patches :as qp])
-  (:import (java.util UUID)
-           (java.io File)))
+  (:import (java.io File)))
 
 (defmacro with-local-mem-connection [name & body]
   `(qp/testing-for-resource-leaks
     (let [~name (api/connect {:local true
-                              :eva.v2.database.core/id (UUID/randomUUID)})]
+                              :eva.v2.database.core/id (random-uuid)})]
       (try
         ~@body
         (finally (api/release ~name))))))
@@ -33,8 +32,8 @@
 
 (defn h2-config [path]
   {:local true,
-   :eva.v2.database.core/id (UUID/randomUUID),
-   :eva.v2.storage.value-store.core/partition-id (UUID/randomUUID),
+   :eva.v2.database.core/id (random-uuid),
+   :eva.v2.storage.value-store.core/partition-id (random-uuid),
    :eva.v2.storage.block-store.types/storage-type :eva.v2.storage.block-store.types/sql,
    :eva.v2.storage.block-store.impl.sql/db-spec
    {:classname "org.h2.Driver",
@@ -44,8 +43,8 @@
 
 (defn sqlite-config [path]
   {:local true,
-   :eva.v2.database.core/id (UUID/randomUUID),
-   :eva.v2.storage.value-store.core/partition-id (UUID/randomUUID),
+   :eva.v2.database.core/id (random-uuid),
+   :eva.v2.storage.value-store.core/partition-id (random-uuid),
    :eva.v2.storage.block-store.types/storage-type :eva.v2.storage.block-store.types/sql,
    :eva.v2.storage.block-store.impl.sql/db-spec
    {:classname "org.sqlite.JDBC",

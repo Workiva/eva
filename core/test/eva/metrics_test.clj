@@ -20,8 +20,7 @@
             [eva.contextual.config :as config]
             [eva.contextual.metrics :as metrics]
             [clojure.string :as str]
-            [clojure.test :refer :all])
-  (:import [java.util UUID]))
+            [clojure.test :refer :all]))
 
 (def metrics {"eva.api.as-of.timer"        :tagged-with-db-configurable
               "eva.api.connect*.timer"     :tagged-with-db-configurable
@@ -61,7 +60,7 @@
        (config/reset!)
        (dorun (for [[t# v#] ~tags-config] (config/set-tag! t# v#)))
        ;; below are just some db activity in order to generate some logging
-       (let [connection#    (eva.api/connect {:local true ::database/id (UUID/randomUUID)})
+       (let [connection#    (eva.api/connect {:local true ::database/id (random-uuid)})
              ~database-id   (get-in connection# [:config ::database/id])
              db#            (eva.api/db connection#)
              db#            (eva.api/db-snapshot connection#)

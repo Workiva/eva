@@ -32,8 +32,7 @@
             [clojure.math.numeric-tower :refer [ceil floor]])
   (:import [clojure.data.avl AVLMap]
            [clojure.lang RT MapEntry]
-           [eva.v2.datastructures.bbtree.storage NodeStorageInfo]
-           [java.util UUID])
+           [eva.v2.datastructures.bbtree.storage NodeStorageInfo])
   (:refer-clojure :exclude [min max]))
 
 ;; Important Legal Note.
@@ -182,11 +181,11 @@
 
 (defn ensure-uuid
   "Expects, but does not enforce, that maybe-uuid is either
-  nil or a string of (format \"%s-%s-%s\" id tx (UUID/randomUUID)).
+  nil or a string of (format \"%s-%s-%s\" id tx (random-uuid)).
   If maybe-uuid is nil, this returns a new string of that format."
   [maybe-uuid id tx]
   (or maybe-uuid
-      (format "%s-%s-%s" id tx (UUID/randomUUID))))
+      (format "%s-%s-%s" id tx (random-uuid))))
 
 (defn node->pointer
   [node]

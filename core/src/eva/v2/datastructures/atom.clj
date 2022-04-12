@@ -40,6 +40,6 @@
 
 (defn create-persisted-atom
   ([store v]
-   (let [k (str (java.util.UUID/randomUUID))]
+   (let [k (str (random-uuid))]
      @(vs/put-value @store k v)
      (->PersistedAtom store k))))

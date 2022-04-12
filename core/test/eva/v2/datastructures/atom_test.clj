@@ -21,14 +21,13 @@
             [eva.quartermaster-patches :as qp]
             [eva.v2.storage.block-store.types :as store-type]
             [eva.v2.storage.block-store.impl.memory :as memory]
-            [eva.v2.storage.value-store.core :as value])
-  (:import [java.util UUID]))
+            [eva.v2.storage.value-store.core :as value]))
 
 (defn memory-config
   []
   {::store-type/storage-type ::store-type/memory
-   ::memory/store-id (UUID/randomUUID)
-   ::value/partition-id (UUID/randomUUID)})
+   ::memory/store-id (random-uuid)
+   ::value/partition-id (random-uuid)})
 
 (deftest atom-unit-test
   (let [config (memory-config)]

@@ -22,8 +22,7 @@
             [quartermaster.core :as qu]
             [clojure.tools.logging :as log]
             [clojure.set :as s]
-            [eva.error :refer [raise]])
-  (:import [java.util UUID]))
+            [eva.error :refer [raise]]))
 
 (defn send* [msgr f & args]
   (locking msgr
@@ -75,7 +74,7 @@
     (send* requestor response! id res)))
 
 (defn send-request!* [{:as requestor :keys [addr promises]} node msg res]
-  (let [id (UUID/randomUUID)
+  (let [id (random-uuid)
         responder (get-responder node addr)]
     (swap! promises assoc id res)
     (send* responder respond! {:msg msg :reply-to [id requestor]})))

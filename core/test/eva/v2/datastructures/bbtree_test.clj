@@ -28,16 +28,15 @@
             [eva.v2.storage.block-store.impl.memory :as memory]
             [eva.v2.storage.value-store.core :as value]
             [quartermaster.core :as qu]
-            [eva.quartermaster-patches :as qp])
-  (:import [java.util UUID]))
+            [eva.quartermaster-patches :as qp]))
 
 (def ^:dynamic test-count 200)
 
 (defn memory-config
   []
   {::store-type/storage-type ::store-type/memory
-   ::memory/store-id (UUID/randomUUID)
-   ::value/partition-id (UUID/randomUUID)})
+   ::memory/store-id (random-uuid)
+   ::value/partition-id (random-uuid)})
 
 (def single-comparator tree/default-comparator)
 (cmps/defcomparator pair-comparator

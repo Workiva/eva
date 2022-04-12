@@ -31,8 +31,7 @@
             [flowgraph.protocols :refer [shutdown]]
             [eva.config :refer [config-strict]]
             [eva.v2.storage.value-store.handlers :refer [merge-write-handlers merge-read-handlers]]
-            [clojure.test :refer :all])
-  (:import [java.util UUID]))
+            [clojure.test :refer :all]))
 
 (def write-handlers (merge-write-handlers
                      (merge bba-write-handler
@@ -48,8 +47,8 @@
 (defn memory-config
   []
   {::store-type/storage-type ::store-type/memory
-   ::memory/store-id (UUID/randomUUID)
-   ::value/partition-id (UUID/randomUUID)})
+   ::memory/store-id (random-uuid)
+   ::value/partition-id (random-uuid)})
 
 (deftest btree-versioning-test
   (qp/testing-for-resource-leaks
