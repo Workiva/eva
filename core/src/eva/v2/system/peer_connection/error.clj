@@ -13,7 +13,7 @@
 ;; limitations under the License.
 
 (ns eva.v2.system.peer-connection.error
-  (:require [eva.error :refer [deferror deferror-group]]))
+  (:require [eva.error :refer [deferror-group]]))
 
 (deferror-group timeout
   (:peer-timeout [:timeout-ms])
