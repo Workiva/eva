@@ -13,8 +13,7 @@
 ;; limitations under the License.
 
 (ns eva.entity
-  (:require [eva.datom :as d]
-            [eva.attribute :as attr]
+  (:require [eva.attribute :as attr]
             [eva.core :as core]
             [eva.error :refer [insist]]
             [clojure.edn])
