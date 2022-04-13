@@ -15,18 +15,15 @@
 (ns eva.contextual.core
   (:require
    [barometer.core]
-   [clojure.string :as str]
    [ichnaie.core]
-   [eva.error :refer [insist]]
    [recide.sanex.logging]
-   [eva.contextual.tags :as tags]
    [eva.contextual.config :as config]
    [eva.contextual.context :as c]
-   [eva.contextual.utils :as utils]
    [eva.contextual.metrics :as metrics]
    [eva.contextual.logging :as logging]
    [eva.contextual.tracing :as tracing]
-   [morphe.core :as d]))
+   [morphe.core :as d])
+  (:refer-clojure :exclude [inc]))
 
 (def ^:dynamic *context* (c/->Context {} {}))
 

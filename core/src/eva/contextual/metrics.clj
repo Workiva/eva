@@ -17,10 +17,10 @@
    [eva.contextual.logging :as logging]
    [eva.contextual.utils :as utils]
    [clojure.string :as str]
-   [recide.sanex.logging :as log]
    [barometer.core]
    [quartermaster.core :as qu]
-   [quartermaster.alpha :as qua]))
+   [quartermaster.alpha :as qua])
+  (:refer-clojure :exclude [inc]))
 
 (defmulti metric-constructor (fn [_ [metric-type context]] metric-type))
 
