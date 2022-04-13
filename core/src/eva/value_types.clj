@@ -17,7 +17,10 @@
             [eva.bytes]
             [eva.functions])
   (:import [eva.functions DBFn]
-           [eva.bytes BBA]))
+           [eva.bytes BBA]
+           (java.util Date UUID)
+           (java.net URI)
+           (clojure.lang BigInt)))
 
 (defn test-array
   [t]
@@ -28,22 +31,22 @@
   (test-array byte-array))
 
 (def type->validator
-  {:db.type/instant (partial instance? java.util.Date)
-   :db.type/boolean (partial instance? java.lang.Boolean)
+  {:db.type/instant (partial instance? Date)
+   :db.type/boolean (partial instance? Boolean)
    :db.type/bytes   (partial instance? BBA)
-   :db.type/uri     (partial instance? java.net.URI)
-   :db.type/uuid    (partial instance? java.util.UUID)
+   :db.type/uri     (partial instance? URI)
+   :db.type/uuid    (partial instance? UUID)
    :db.type/string  string?
    :db.type/keyword keyword?
    :db.type/ref     (partial satisfies? IEntityID)
    :db.type/bigdec  decimal?
    :db.type/float   (fn [x] (and (float? x) (not (Float/isNaN x))))
-   :db.type/bigint  (partial instance? clojure.lang.BigInt)
+   :db.type/bigint  (partial instance? BigInt)
    :db.type/double  (fn [x] (and (double? x) (not (Double/isNaN x))))
-   :db.type/long    (partial instance? java.lang.Long)
+   :db.type/long    (partial instance? Long)
    :db.type/fn      (partial instance? DBFn)})
 
-(defmulti valid-value-type? (fn [t x] t))
+(defmulti valid-value-type? (fn [t _] t))
 
 (defn register-types [vmap]
   (doseq [[t vfn] vmap]
