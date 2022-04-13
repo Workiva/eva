@@ -32,16 +32,14 @@
   (:require [eva.entity-id :as entity-id]
             [eva.datastructures.utils.comparators :refer [UPPER LOWER]]
             [eva.datastructures.utils.interval :refer [open-interval]]
-            [clojure.pprint :as pp]
-            [schema.core :as s]
-            [com.rpl.specter :as sp]
-            [com.rpl.specter.macros :refer [transform]]
             [eva.sizing-api :as sapi]
             [eva.print-ext]
             [plumbing.core :as pc])
-  (:import (java.io Writer)
-           (com.carrotsearch.sizeof RamUsageEstimator)
-           (eva Datom)))
+  (:import (com.carrotsearch.sizeof RamUsageEstimator)
+           (eva Datom)
+           (java.io Serializable)
+           (clojure.lang IObj IHashEq IPersistentMap Indexed)
+           (org.fressian.handlers WriteHandler ReadHandler)))
 
 (defprotocol PackableDatom
   (->peid  [d])
@@ -88,7 +86,7 @@
                    ^:unsynchronized-mutable ^int _hasheq
                    ^:unsynchronized-mutable ^int _size
                    _meta]
-  java.io.Serializable
+  Serializable
   sapi/SizeEstimable
   (ram-size [this]
     (caching-int-fn this #(RamUsageEstimator/sizeOf %) _size))
@@ -99,18 +97,18 @@
   (tx [_] tx)
   (added [_] added)
   (getIndex [this i] (nth this i))
-  (getKey [this k]
+  (getKey [_ k]
     (case k
       (:e "e") e
       (:a "a") a
       (:v "v") v
       (:tx "tx") tx
       (:added "added") added))
-  clojure.lang.IObj
-  (withMeta [this m]
+  IObj
+  (withMeta [_ m]
     (DatomMap. e a v tx added _hash _hasheq _size m))
-  (meta [this] _meta)
-  clojure.lang.IHashEq
+  (meta [_] _meta)
+  IHashEq
   (hasheq [this] (hash-unordered this))
   Object
   (hashCode [this] (bit-xor (.hashCode (class this))
@@ -128,17 +126,17 @@
              (= tx (.tx ^Datom other))
              (= added (.added ^Datom other)))))
   (toString [this] (pr-str this))
-  clojure.lang.IPersistentMap
+  IPersistentMap
   (count [_] 5)
-  (equiv [this that]
+  (equiv [_ that]
     (and (instance? Datom that)
          (= e (.e ^Datom that))
          (= a (.a ^Datom that))
          (= v (.v ^Datom that))
          (= tx (.tx ^Datom that))
          (= added (.added ^Datom that))))
-  (seq [this] (seq [e a v tx added]))
-  (assoc [this k v']
+  (seq [_] (seq [e a v tx added]))
+  (assoc [_ k v']
     (case k
       (:e "e") (DatomMap. v' a v tx added -1 -1 -1 nil)
       (:a "a") (DatomMap. e v' v tx added -1 -1 -1 nil)
@@ -147,7 +145,7 @@
       (:added "added") (DatomMap. e a v tx v' -1 -1 -1 nil)))
   (valAt [this k]
     (.valAt this k nil))
-  (valAt [this k not-found]
+  (valAt [_ k not-found]
     (case k
       (:e "e") e
       (:a "a") a
@@ -155,7 +153,7 @@
       (:tx "tx") tx
       (:added "added") added
       :else not-found))
-  clojure.lang.Indexed
+  Indexed
   (nth [_ i]
     (case i
       0 e
@@ -168,20 +166,20 @@
       (nth this i)
       not-found))
   PackableDatom
-  (->peid [d] (if added e (bit-set e 62)))
-  (->eavt  [d]
+  (->peid [_] (if added e (bit-set e 62)))
+  (->eavt  [_]
     (if added
       [:conj [e a v tx]]
       [:remove-interval (->interval e a v)]))
-  (->avet  [d]
+  (->avet  [_]
     (if added
       [:conj [a v e tx]]
       [:remove-interval (->interval a v e)]))
-  (->aevt  [d]
+  (->aevt  [_]
     (if added
       [:conj [a e v tx]]
       [:remove-interval (->interval a e v)]))
-  (->vaet  [d]
+  (->vaet  [_]
     (if added
       [:conj [v a e tx]]
       [:remove-interval (->interval v a e)]))
@@ -196,50 +194,16 @@
   ([tx [op e a v]]    (datom e a v tx (pc/safe-get {:db/add true, :db/retract false} op)))
   ([e a v tx added]  (DatomMap. e a v tx added -1 -1 -1 nil)))
 
-(defn vec->datom
-  ([index [c0 c1 c2 c3 & [added]]]
-   ;; The canonical ordering is e a v t added
-   ;; the incoming vector may be ordered differently
-   ;; if so, we need to swap some stuff around
-   (cond
-     (= index :eavt)
-     (datom c0 c1 c2 c3 (or added true))
-
-     (= index :aevt)
-     (datom c1 c0 c2 c3 (or added true))
-
-     (= index :avet)
-     (datom c2 c0 c1 c3 (or added true))
-
-     (= index :vaet)
-     (datom c2 c1 c0 c3 (or added true))
-
-     :else
-     (throw (RuntimeException. (str "Index: " index " is non-canonical")))))
-  ([[e a v tx & [added]]]
-   (datom e a v tx (or added true))))
-
-(defn ->logical-lower [d] (assoc d :tx LOWER))
-
-(defn ->logical-upper [d] (assoc d :tx UPPER))
-
-(defn valid-temp-id? [x] (< x 0))
-
 (defn temp-tx-id? [x]
   (and (entity-id/entity-id? x)
        (entity-id/temp? x)
        (or (= 1 (entity-id/partition x))
            (= :db.part/tx (entity-id/partition x)))))
 
-(defn tagged-temp-id? [x]
-  (and (entity-id/entity-id? x)
-       (entity-id/temp? x)
-       (entity-id/n x)))
-
 (defn unpack-datom
   ([tx [peid a v]]
    (unpack-datom [peid a v tx]))
-  ([[peid a v tx :as d]]
+  ([[peid a v tx]]
    (let [added (entity-id/added? peid)]
      (datom (bit-clear peid 62) a v tx added))))
 
@@ -264,7 +228,7 @@
 
 (def datom-write-handler
   {DatomMap {"eva/datom"
-             (reify org.fressian.handlers.WriteHandler
+             (reify WriteHandler
                (write [_ w d]
                  (.writeTag w "eva/datom" 5)
                  (.writeObject w (.e ^Datom d))
@@ -275,8 +239,8 @@
 
 (def datom-read-handler
   {"eva/datom"
-   (reify org.fressian.handlers.ReadHandler
-     (read [_ r tag component-count]
+   (reify ReadHandler
+     (read [_ r _ _]
        (DatomMap. (.readObject r)
                   (.readObject r)
                   (.readObject r)
