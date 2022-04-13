@@ -30,7 +30,8 @@
 (ns eva.bytes
   (:require [eva.error :refer [insist]])
   (:import [com.google.common.primitives UnsignedBytes]
-           [org.fressian.handlers WriteHandler ReadHandler]))
+           [org.fressian.handlers WriteHandler ReadHandler]
+           (java.util Comparator Arrays)))
 
 (def byte-cmptr (UnsignedBytes/lexicographicalComparator))
 
@@ -45,9 +46,9 @@
 
 ;; better byte array
 (deftype BBA [^bytes ba ^:unsynchronized-mutable ^int _hash]
-  java.lang.Comparable
+  Comparable
   (compareTo [this that]
-    (.compare ^java.util.Comparator byte-cmptr
+    (.compare ^Comparator byte-cmptr
               (.-ba this)
               (.-ba ^BBA that)))
   Object
@@ -56,7 +57,7 @@
       (zero? (.compareTo this that))
       false))
   (hashCode [this]
-    (caching-hash this (fn juahash [^BBA bba] (bit-xor (java.util.Arrays/hashCode ^bytes (.ba bba)) 31)) _hash)))
+    (caching-hash this (fn juahash [^BBA bba] (bit-xor (Arrays/hashCode ^bytes (.ba bba)) 31)) _hash)))
 
 (defn byte-array? [o]
   (let [c (class o)]
@@ -84,6 +85,6 @@
 (def bba-read-handler
   {"eva/bba"
    (reify ReadHandler
-     (read [_ r tag component-count]
+     (read [_ r _ _]
        (let [ba (.readObject r)]
          (->BBA ba -1))))})
