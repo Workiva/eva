@@ -12,8 +12,7 @@
 ;; See the License for the specific language governing permissions and
 ;; limitations under the License.
 
-(ns eva.v2.system.protocols
-  (:require [clojure.spec.alpha :as spec]))
+(ns eva.v2.system.protocols)
 
 ;; Components
 
