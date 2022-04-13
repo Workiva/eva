@@ -34,9 +34,6 @@
   (index-roots [entry])
   (tx-num [entry]))
 
-(defprotocol IndexSync
-  (force-index-sync [log] [log index-name]))
-
 (defprotocol AdvanceIndex
   (safe-advance-index [index db tx-log-entry])
   (advance-index-to-tx [index db tx-log target-tx-num])
