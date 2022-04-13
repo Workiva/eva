@@ -15,30 +15,25 @@
 (ns eva.v2.transaction-pipeline.core
   "Core logic for the transaction pipeline, provides the entry point for transaction
    processing via the 'transact' function"
-  (:require [eva.attribute :as attr]
-            [barometer.aspects :refer [timed]]
-            [eva.core :as core :refer [index-roots tx-num]]
-            [eva.utils :refer [one]]
-            [eva.entity-id :as entity-id :refer [temp? tagged-tempid?]]
-            [eva.error :refer [raise insist] :as err]
+  (:require [barometer.aspects :refer [timed]]
+            [eva.core :refer [index-roots tx-num entry->datoms]]
+            [eva.entity-id :as entity-id]
+            [eva.error :refer [insist] :as err]
             [recide.sanex :as sanex]
             [eva.utils.logging :refer [logged]]
             [eva.v2.database.log :refer [map->TransactionLogEntry LOG_ENTRY_VERSION]]
-            [eva.core :refer [entry->datoms]]
             [eva.v2.transaction-pipeline.protocols :refer :all]
             [eva.v2.transaction-pipeline.type
              [basic :refer [->add ->retract add-op? retract-op? pack]]
              [tx-fn :refer [db-fn-op? ->tx-fn]]
-             [map :refer [->map-entity map->adds]]]
+             [map :refer [->map-entity]]]
             [eva.v2.transaction-pipeline.error :refer [raise-unrecognized-command] :as tp-err]
             [eva.v2.transaction-pipeline.resolve.maps :as rmaps]
             [eva.v2.transaction-pipeline.resolve.ids :as rids]
             [eva.v2.transaction-pipeline.resolve.tx-fns :as txfns]
             [eva.v2.transaction-pipeline.validation :as valid]
             [morphe.core :as d]
-            [ichnaie.core :refer [traced]]
-            [loom.graph :as lg]
-            [loom.alg :as la])
+            [ichnaie.core :refer [traced]])
   (:import [java.util List Map]))
 
 (def writer-id (memoize #(random-uuid)))
@@ -56,7 +51,7 @@
   (eliminate-redundancy [report] (rids/eliminate-redundancy report))
   (validate [report] (valid/validate report))
   (check-commands-value-types! [report] (valid/check-commands-value-types! report))
-  (generate-tx-log-entry [report]
+  (generate-tx-log-entry [_]
     (let [meta (deref meta)]
       (insist (:validated? meta) "Cannot generate a tx-log-entry from an unvalidated report.")
       (let [index-roots (index-roots db-before)
