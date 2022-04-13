@@ -29,18 +29,6 @@
 
 (def init-fill-index-retry-strategy #(default-strategy 3))
 
-(def query-through-retry-strategy #(default-strategy 3))
-
-(def multi-query-through-retry-strategy #(default-strategy 3))
-
 (def write-tx-log-retry-strategy #(default-strategy 3))
 
-(def tx-activation-retry-strategy #(default-strategy 3))
-
-(def open-init-ns-retry-strategy #(default-strategy 3))
-
 (def create-index-retry-strategy #(default-strategy 3))
-
-(def open-or-create-log-retry-strategy #(default-strategy 3))
-
-(def update-indexes-retry-strategy #(default-strategy 3))
