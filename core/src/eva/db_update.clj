@@ -25,5 +25,4 @@
   (advance-db-to-tx [db tx-log target-tx-num]
     "Given the log and a transaction number advance the database to the target tx.")
   (flush-overlay [db tx-num]
-    "Returns a new db instance with all datoms <= tx-num removed from the overlay.")
-  (update-overlay [db datoms]))
+    "Returns a new db instance with all datoms <= tx-num removed from the overlay."))
