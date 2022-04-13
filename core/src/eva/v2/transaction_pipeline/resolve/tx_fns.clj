@@ -13,8 +13,7 @@
 ;; limitations under the License.
 
 (ns eva.v2.transaction-pipeline.resolve.tx-fns
-  (:require [eva.v2.transaction-pipeline.resolve.maps.flatten :refer [flatten-map-entities]]
-            [eva.v2.transaction-pipeline.type.tx-fn :refer [tx-fn? eval-tx-fn]]
+  (:require [eva.v2.transaction-pipeline.type.tx-fn :refer [tx-fn? eval-tx-fn]]
             [morphe.core :as d]
             [ichnaie.core :refer [traced]]))
 
