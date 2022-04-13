@@ -24,18 +24,13 @@
 ;; -----------------------------------------------------------------------------
 
 (ns eva.utils
-  (:require [plumbing.core :as pc]
-            [schema.core :as s]
-            [clojure.data.avl :as avl]
-            [manifold.deferred :as d]
+  (:require [clojure.data.avl :as avl]
             [potemkin :refer [fast-memoize]]
             [eva.builtin]
             [eva.error :as err]
             [eva.functions :as ef]
             [recide.sanex :as sanex]
-            [recide.sanex.logging :refer [spy info warn]]
-            [clojure.pprint :as pp]
-            [clojure.edn :as edn])
+            [recide.sanex.logging :refer [warn]])
   (:import (clojure.lang IDeref)))
 
 (defn one
@@ -294,26 +289,3 @@
   delays that suits your use case."
   [strategy warn-msg & body]
   `(with-retries* ~strategy ~warn-msg (fn [] ~@body)))
-
-(defn ^{:dont-test "Used in impl of thread-local"}
-  thread-local*
-  "Non-macro version of thread-local - see documentation for same."
-  [init]
-  (let [generator (proxy [ThreadLocal] []
-                    (initialValue [] (init)))]
-    (reify IDeref
-      (deref [this]
-        (.get generator)))))
-
-(defmacro thread-local
-  "Takes a body of expressions, and returns a java.lang.ThreadLocal object.
-   (see http://download.oracle.com/javase/6/docs/api/java/lang/ThreadLocal.html).
-   To get the current value of the thread-local binding, you must deref (@) the
-   thread-local object. The body of expressions will be executed once per thread
-   and future derefs will be cached.
-   Note that while nothing is preventing you from passing these objects around
-   to other threads (once you deref the thread-local, the resulting object knows
-   nothing about threads), you will of course lose some of the benefit of having
-   thread-local objects."
-  [& body]
-  `(thread-local* (fn [] ~@body)))
