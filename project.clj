@@ -38,7 +38,7 @@
                  [org.clojure/core.unify "0.5.7"]
                  [com.mchange/c3p0 "0.9.5.5"]
                  [com.h2database/h2 "1.4.197"]
-                 [org.xerial/sqlite-jdbc "3.25.2"]
+                 [org.xerial/sqlite-jdbc "3.36.0.3"]
                  [org.mariadb.jdbc/mariadb-java-client "1.4.6"]
                  [mysql/mysql-connector-java "5.1.45"]
                  [org.postgresql/postgresql "9.4-1206-jdbc42"]
