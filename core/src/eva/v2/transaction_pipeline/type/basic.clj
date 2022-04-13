@@ -17,17 +17,11 @@
   (:require [eva
              [attribute :as attr]
              [bytes :refer [ensure-bytes-wrapped]]
-             [core :refer [select-datoms]]
-             [entity-id :refer [entid-strict temp? entity-id?]]
-             [error :refer [raise insist]]
-             [utils :refer [one]]]
-            [recide.sanex :as sanex]
-            [eva.core :refer [db-fn? ->fn allocated-entity-id?]])
-  (:import (java.util List Map)
-           (eva Database)
-           (eva.bytes BBA)
-           (eva.attribute Attribute)
-           (org.fressian.handlers WriteHandler ReadHandler)))
+             [entity-id :refer [entid-strict entity-id?]]
+             [error :refer [raise]]]
+            [eva.core :refer [ allocated-entity-id?]])
+  (:import (java.util List)
+           (eva.attribute Attribute)))
 
 (defn ensure-extant-eid [db e]
   (if (allocated-entity-id? db e)
