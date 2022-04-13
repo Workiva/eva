@@ -14,7 +14,6 @@
 
 (ns eva.v2.system.transactor.core
   (:require [quartermaster.core :as qu]
-            [eva.core :as core]
             [eva.v2.storage.value-store.core :as values]
             [eva.v2.messaging.node.manager.alpha :as messenger-node]
             [eva.v2.messaging.node.manager.types :as messenger]
@@ -28,17 +27,16 @@
             [eva.contextual.core :as cntx]
             [eva.contextual.tags :as cntx-tags]
             [eva.contextual.config :as cntx-config]
-            [eva.error :refer [raise error?]]
+            [eva.error :refer [raise]]
             [eva.utils.logging :refer [logged]]
             [recide.sanex :as sanex]
             [recide.sanex.logging :as log]
             [clojure.spec.alpha :as s]
             [eva.v2.utils.spec :refer [conform-spec]]
             [morphe.core :as d]
-            [ichnaie.core :refer [traced tracing]]
-            [com.stuartsierra.component :as c]
+            [ichnaie.core :refer [traced]]
             [recide.core :refer [try*]])
-  (:import [java.util.List]))
+  (:import (java.util List)))
 
 ;;;;;;;;;;
 ;; SPEC ;;
@@ -60,7 +58,7 @@
 (s/def ::transaction-id long?)
 
 (s/def ::transaction-data
-  (partial instance? java.util.List))
+  (partial instance? List))
 
 (s/def ::temporary-ids (s/map-of long? long?))
 
