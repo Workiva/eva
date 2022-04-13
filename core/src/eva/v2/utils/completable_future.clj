@@ -25,7 +25,7 @@
                       (reject p v)
                       (complete p v)))
 
-(defn done? [^CompletableFuture p] (or (.isDone p)))
+(defn done? [^CompletableFuture p] (.isDone p))
 (defn pending? [p] (not (done? p)))
 (defn rejected? [^CompletableFuture p] (.isCompletedExceptionally p))
 (defn cancelled? [^CompletableFuture p] (.isCancelled p))
