@@ -13,7 +13,8 @@
 ;; limitations under the License.
 
 (ns eva.contextual.config
-  (:require [clojure.spec.alpha :as s]))
+  (:require [clojure.spec.alpha :as s])
+  (:refer-clojure :exclude [reset!]))
 
 (s/def ::config-options #{::as-per-config ::override})
 
