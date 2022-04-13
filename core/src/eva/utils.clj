@@ -233,8 +233,6 @@
     col
     (into (avl/sorted-set-by comp) col)))
 
-(def ensure-sorted-avl* (fast-memoize ensure-avl-sorted-set-by))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Again Variants
 ;;
