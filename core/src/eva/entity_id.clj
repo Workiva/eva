@@ -67,22 +67,22 @@
          temp      = true if entity-id is temporary"
         ([p e retracted temp]
          {:pre [(<= 0 p max-p)
-                  (<= 0 e max-e)]}
-          (-> p
-              (bit-shift-left 42)
-              (bit-or e)
-              (cond->
-                retracted       (bit-set 62)
-                (not retracted) (bit-clear 62))
-              (cond->
-                temp       (bit-set 63)
-                (not temp) (bit-clear 63))))
+                (<= 0 e max-e)]}
+         (-> p
+             (bit-shift-left 42)
+             (bit-or e)
+             (cond->
+               retracted       (bit-set 62)
+               (not retracted) (bit-clear 62))
+             (cond->
+               temp       (bit-set 63)
+               (not temp) (bit-clear 63))))
         ;; "Packs a mostly-packed integer that is only missing the
         ;; add/retract bit flag"
         ([op packed-id]
-          (case op
-            :db/add (bit-clear packed-id 62)
-            :db/retract (bit-set packed-id 62))))
+         (case op
+           :db/add (bit-clear packed-id 62)
+           :db/retract (bit-set packed-id 62))))
 
 (def base-tx-eid (pack-entity-id 1 0 false false))
 (def max-tx-eid (pack-entity-id 1 max-e false false))
@@ -94,9 +94,6 @@
 (defn tx-num? [num]
   (and (integer? num)
        (<= 0 num max-e)))
-
-(s/defschema TxEid (s/pred tx-eid? "tx-eid?"))
-(s/defschema TxNum (s/pred tx-num? "tx-num?"))
 
 (defn ->tx-eid "Takes a tx-num or tx-eid and returns the equivalent tx-eid"
   [tx-foo]
@@ -141,7 +138,7 @@
                                      retracted?
                                      temp?)))
 
-(extend-type java.lang.Long
+(extend-type Long
   IEntityID
   (partition     [this] (-> (clojure.math.numeric-tower/expt 2 20)
                             dec
@@ -174,8 +171,8 @@
       (raise :eva.database/cannot-resolve-entid
              (format "Failed to resolve %s to a valid entity-id." e)
              {:e e,
-              ::sanex/sanitary? false
-              })
+              ::sanex/sanitary? false})
+
       e')))
 
 ;; the range -1000000 to :cur-n will always be the
@@ -228,22 +225,19 @@
    If we are in a transactor context, will count up from :tx-n.
 
    Context is determined by the existence of the :tx-n key"
-  [] (let [info (swap! *id-info*
-                       (fn [info]
-                         (if (:tx-n info)
-                           (let [allocated (inc (:tx-n info))]
-                             (assoc info :tx-n allocated :allocated allocated :tx-tempid? true))
-                           (let [allocated (dec (:cur-n info))]
-                             (assoc info :cur-n allocated :allocated allocated :tx-tempid? false)))))]
-       (select-keys info [:tx-tempid? :allocated])))
+  []
+  (let [info (swap! *id-info*
+                    (fn [info]
+                      (if (:tx-n info)
+                        (let [allocated (inc (:tx-n info))]
+                          (assoc info :tx-n allocated :allocated allocated :tx-tempid? true))
+                        (let [allocated (dec (:cur-n info))]
+                          (assoc info :cur-n allocated :allocated allocated :tx-tempid? false)))))]
+    (select-keys info [:tx-tempid? :allocated])))
 
 (defn tagged-tempid? [tid]
   (and (temp? tid)
        (<= -1000000 (n tid) -1)))
-
-(defn genned-tempid? [tid]
-  (and (temp? tid)
-       (< (n tid) -1000000)))
 
 (defn tempid
   ([partition]
