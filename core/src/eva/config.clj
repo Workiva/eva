@@ -18,7 +18,7 @@
             [clojure.string :as str]
             [clojure.java.io :as io]
             [clojure.pprint])
-  (:import (java.io File)
+  (:import (java.io File Writer)
            (java.lang Runtime)))
 
 (deferror-group config-error
@@ -339,4 +339,4 @@
         (println)
         (finally
           (when path
-            (.close ^java.io.Writer *out*)))))))
+            (.close ^Writer *out*)))))))
