@@ -16,7 +16,6 @@
   (:require [eva.api :as eva :refer [connect squuid transact db]]
             [clojure.test :refer :all]
             [eva.datastructures.utils.comparators :refer [UPPER LOWER]]
-            [com.rpl.specter.macros :refer [transform]]
             [clojure.tools.logging :refer [debug]]
             [eva.logging :refer [with-context]]
             [eva.v2.server.transactor-test-utils

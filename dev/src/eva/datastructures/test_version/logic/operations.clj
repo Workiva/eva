@@ -19,20 +19,14 @@
             [eva.datastructures.test-version.logic.state :as state]
             [eva.datastructures.utils.comparators :as comparators]
             [eva.datastructures.test-version.logic.buffer :as buffer]
-            [eva.datastructures.test-version.logic.message :as message]
-            [eva.datastructures.utils.core :refer [fast-last]]
             [eva.datastructures.test-version.logic.balance :as balance]
             [eva.datastructures.test-version.logic.storage :as storage]
             [barometer.core :as metrics]
             [eva.error :refer [insist]]
             [utiliva.core :refer [partition-map piecewise-map group-like zip-from]]
-            [utiliva.alpha :refer [mreduce]]
             [plumbing.core :as pc]
-            [clojure.data.avl :as avl]
             [clojure.math.numeric-tower :refer [ceil floor]]
-            [com.rpl.specter :as sp]
-            [com.rpl.specter.macros :as sm]
-            [clojure.tools.logging :refer [debug]]))
+            [com.rpl.specter :as sp]))
 
 (set! *warn-on-reflection* true)
 (declare deliver-messages-batch)
@@ -66,10 +60,10 @@
       (new-nodes-constructor buckets)
       (let [msgs (for [b buckets] (pc/map-from-keys #(get (messages node) %) (keys b)))
             ;; If we're not in a leaf node, we want to make the last internal pointer to be comparators/UPPER
-            [properly-keyed-buckets replaced] (sm/replace-in [sp/ALL sp/LAST sp/FIRST] (fn [x] [comparators/UPPER [x]]) buckets)
+            [properly-keyed-buckets replaced] (sp/replace-in [sp/ALL sp/LAST sp/FIRST] (fn [x] [comparators/UPPER [x]]) buckets)
             ;; And we need to transfer messages from the old queues to the new queues, with these replacements in mind:
             keys-to-replace (set replaced)
-            properly-keyed-msgs (sm/setval [sp/ALL sp/ALL sp/FIRST keys-to-replace] comparators/UPPER msgs)]
+            properly-keyed-msgs (sp/setval [sp/ALL sp/ALL sp/FIRST keys-to-replace] comparators/UPPER msgs)]
         ;; this is accomplished with transfer-messages:
         (map transfer-messages
              (new-nodes-constructor properly-keyed-buckets)

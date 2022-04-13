@@ -31,7 +31,6 @@
             [eva.query.dialect.pull.core :refer [pull pull-many]]
             [eva.v2.server.transactor-test-utils :refer [with-local-mem-connection]]
             [plumbing.core :as pc]
-            [com.rpl.specter.macros :as sm]
             [com.rpl.specter :as specter]))
 
 (def schema
@@ -238,8 +237,8 @@
                          [{:db/id (perm 17) :name "Part A.B.A.A"}
                           {:db/id (perm 18) :name "Part A.B.A.B"}]}]}]}
               setter (pc/fn->>
-                      (sm/transform [:part specter/ALL :part specter/ALL :part] (partial into #{}))
-                      (sm/transform [:part] (partial into #{})))]
+                       (specter/transform [:part specter/ALL :part specter/ALL :part] (partial into #{}))
+                       (specter/transform [:part] (partial into #{})))]
           (testing "Component entities are expanded recursively"
             (is (= (setter parts)  (setter (pull test-db '[:name :part] (perm 10))))))
           (testing "Reverse component references yield a single result"

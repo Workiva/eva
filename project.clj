@@ -11,7 +11,7 @@
                  [prismatic/schema "1.2.0"]
                  [prismatic/plumbing "0.6.0"]
                  [org.clojure/data.avl "0.1.0"]
-                 [com.rpl/specter "0.12.0"]
+                 [com.rpl/specter "1.1.4"]
                  [com.google.guava/guava "22.0"]
                  [manifold/manifold "0.1.6"]
                  [org.apache.activemq/artemis-core-client "2.4.0"]
@@ -116,69 +116,69 @@
           :namespaces  [eva.api]
           :output-path "docs/api/clojure"}
 
-  :profiles {:logback         {:dependencies [[ch.qos.logback/logback-classic "1.2.3"]]}
-             :logging-bridges {:dependencies [[org.slf4j/jcl-over-slf4j "1.7.12"]
-                                              [org.slf4j/log4j-over-slf4j "1.7.12"]]}
+  :profiles {:logback           {:dependencies [[ch.qos.logback/logback-classic "1.2.3"]]}
+             :logging-bridges   {:dependencies [[org.slf4j/jcl-over-slf4j "1.7.12"]
+                                                [org.slf4j/log4j-over-slf4j "1.7.12"]]}
 
-             :server {:dependencies      [[ch.qos.logback/logback-classic "1.2.3"]
-                                          [org.apache.derby/derby "10.14.1.0"]
-                                          [org.clojure/tools.cli "0.3.5"]
-                                          [com.workiva.eva.catalog/client.alpha "2.0.1"]]
-                      :source-paths      ["server/src"]
-                      :java-source-paths ["server/java-src"]
-                      :test-paths        ["server/tests"]}
+             :server            {:dependencies      [[ch.qos.logback/logback-classic "1.2.3"]
+                                                     [org.apache.derby/derby "10.14.1.0"]
+                                                     [org.clojure/tools.cli "0.3.5"]
+                                                     [com.workiva.eva.catalog/client.alpha "2.0.1"]]
+                                 :source-paths      ["server/src"]
+                                 :java-source-paths ["server/java-src"]
+                                 :test-paths        ["server/tests"]}
 
-             :server-main [:server :aot
-                           {:main ^:skip-aot eva.Server
-                            :aot  [eva.server.v2]}]
+             :server-main       [:server :aot
+                                 {:main ^:skip-aot eva.Server
+                                  :aot  [eva.server.v2]}]
 
-             :aot {:aot [eva.api]}
+             :aot               {:aot [eva.api]}
 
-             :activemq-client {:dependencies [[org.apache.activemq/activemq-client "5.15.8"
-                                               ;; exclude jms 1.1 api classes that conflict with jms 2.0 api classes
-                                               :exclusions [org.apache.geronimo.specs/geronimo-jms_1.1_spec]]]}
+             :activemq-client   {:dependencies [[org.apache.activemq/activemq-client "5.15.8"
+                                                 ;; exclude jms 1.1 api classes that conflict with jms 2.0 api classes
+                                                 :exclusions [org.apache.geronimo.specs/geronimo-jms_1.1_spec]]]}
 
-             :activemq-server {:dependencies [[org.apache.activemq/activemq-broker "5.15.8"]
-                                              [org.apache.activemq/activemq-kahadb-store "5.15.3"]]}
+             :activemq-server   {:dependencies [[org.apache.activemq/activemq-broker "5.15.8"]
+                                                [org.apache.activemq/activemq-kahadb-store "5.15.3"]]}
 
-             :dev [:server :activemq-client :activemq-server :logback :logging-bridges
-                   {:dependencies      [[criterium "0.4.3"]
-                                        [clojure-csv/clojure-csv "2.0.1"]
-                                        [com.gfredericks/test.chuck "0.1.19"]
-                                        [org.clojure/test.check "0.10.0-alpha2"]
-                                        [org.clojure/data.generators "0.1.2"]
-                                        [org.clojure/tools.namespace "0.2.11"]
-                                        [com.googlecode.log4jdbc/log4jdbc "1.2"]
-                                        [org.clojure/tools.namespace "0.2.11"]
-                                        [philoskim/debux "0.5.2"]
-                                        [circleci/bond "0.3.1"]
-                                        [vvvvalvalval/scope-capture "0.3.2"]
-                                        [com.mockrunner/mockrunner-jms "1.1.2" :exclusions [commons-logging/commons-logging]]]
-                    :injections        [(require 'debux.core)
-                                        (require 'sc.api)]
-                    :source-paths      ["dev/src"]
-                    :java-source-paths ["dev/java-src"]
-                    :test-paths        ["dev/test"]
-                    :resource-paths    ["dev/resources" "core/test-resources" "server/test-resources"]
-                    :repl-options      {:init-ns eva.dev.repl :timeout 120000}
-                    :test-selectors    {:default (complement :slow)
-                                        :slow    :slow}
-                    :global-vars       {*warn-on-reflection* true}}
-                   {:plugins [[jonase/eastwood "0.3.5"]]}]
+             :dev               [:server :activemq-client :activemq-server :logback :logging-bridges
+                                 {:dependencies      [[criterium "0.4.3"]
+                                                      [clojure-csv/clojure-csv "2.0.1"]
+                                                      [com.gfredericks/test.chuck "0.1.19"]
+                                                      [org.clojure/test.check "0.10.0-alpha2"]
+                                                      [org.clojure/data.generators "0.1.2"]
+                                                      [org.clojure/tools.namespace "0.2.11"]
+                                                      [com.googlecode.log4jdbc/log4jdbc "1.2"]
+                                                      [org.clojure/tools.namespace "0.2.11"]
+                                                      [philoskim/debux "0.5.2"]
+                                                      [circleci/bond "0.3.1"]
+                                                      [vvvvalvalval/scope-capture "0.3.2"]
+                                                      [com.mockrunner/mockrunner-jms "1.1.2" :exclusions [commons-logging/commons-logging]]]
+                                  :injections        [(require 'debux.core)
+                                                      (require 'sc.api)]
+                                  :source-paths      ["dev/src"]
+                                  :java-source-paths ["dev/java-src"]
+                                  :test-paths        ["dev/test"]
+                                  :resource-paths    ["dev/resources" "core/test-resources" "server/test-resources"]
+                                  :repl-options      {:init-ns eva.dev.repl :timeout 120000}
+                                  :test-selectors    {:default (complement :slow)
+                                                      :slow    :slow}
+                                  :global-vars       {*warn-on-reflection* true}}
+                                 {:plugins [[jonase/eastwood "0.3.5"]]}]
 
-             :dynamodb-local     {:repositories [["dynamodb-local" "http://dynamodb-local.s3-website-us-west-2.amazonaws.com/release"]]
-                                  :dependencies [[com.amazonaws/DynamoDBLocal "1.11.0.1" :exclusions [com.amazonaws/aws-java-sdk-dynamodb
-                                                                                                      org.apache.logging.log4j/log4j-core]]]}
-             :jar                {:global-vars {*warn-on-reflection* false}}
-             :uberjar            [:server-main {:uberjar-name "transactor.jar"
-                                                :global-vars  {*warn-on-reflection* false}}]
+             :dynamodb-local    {:repositories [["dynamodb-local" "http://dynamodb-local.s3-website-us-west-2.amazonaws.com/release"]]
+                                 :dependencies [[com.amazonaws/DynamoDBLocal "1.11.0.1" :exclusions [com.amazonaws/aws-java-sdk-dynamodb
+                                                                                                     org.apache.logging.log4j/log4j-core]]]}
+             :jar               {:global-vars {*warn-on-reflection* false}}
+             :uberjar           [:server-main {:uberjar-name "transactor.jar"
+                                               :global-vars  {*warn-on-reflection* false}}]
 
-             :deployment [:logback :logging-bridges
-                          {:resource-paths ["server/src/resources"]}]
+             :deployment        [:logback :logging-bridges
+                                 {:resource-paths ["server/src/resources"]}]
 
-             :api-docs {:dependencies [[codox-theme-rdash "0.1.2"]]}
+             :api-docs          {:dependencies [[codox-theme-rdash "0.1.2"]]}
 
              :internal-api-docs {:dependencies [[codox-theme-rdash "0.1.2"]]
                                  :codox        ^:replace {:output-path "./docs/api/"}}
 
-             :debug-compile {:javac-options ["-target" "1.8" "-source" "1.8" "-Xlint:-options" "-g"]}})
+             :debug-compile     {:javac-options ["-target" "1.8" "-source" "1.8" "-Xlint:-options" "-g"]}})
