@@ -20,8 +20,8 @@
             [clojure.edn]
             [eva.error :refer [raise]]
             [eva.attribute :as attr]
-            [recide.sanex :as sanex]
-            [clojure.core.cache :as cache]))
+            [clojure.core.cache :as cache])
+  (:import (clojure.lang IFn)))
 
 (defprotocol CompilableFunction
   (->f [obj]))
@@ -34,8 +34,8 @@
     str-or-code))
 
 (defn process-reference [kname args]
-    `(~(symbol "clojure.core" (clojure.core/name kname))
-           ~@(map #(list 'quote %) args)))
+    `(~(symbol "clojure.core" (clojure.core/name kname))
+      ~@(map #(list 'quote %) args)))
 
 (defmulti compile-db-fn (fn [{:keys [lang]}]
                           {:pre [(some? lang)]}
@@ -100,11 +100,11 @@
     (let [cache' (swap! fn-cache ensure-cached-fn this)]
       (get cache' this)))
 
-  java.lang.Comparable
+  Comparable
   (compareTo [this o]
     (compare (hash this) (hash o)))
 
-  clojure.lang.IFn
+  IFn
   #_(for [x (range 21) :let [xs (clojure.string/join " " (map #(str "x" %) (range x)))]] (println (format "(invoke [this %s] ((->f this) %s))" xs xs)))
   (invoke [this] ((->f this)))
   (invoke [this x0] ((->f this) x0))
@@ -128,8 +128,6 @@
   (invoke [this x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18] ((->f this) x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18))
   (invoke [this x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19] ((->f this) x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19))
   (applyTo [this args] (apply (->f this) args)))
-
-(defn dbfn? [o] (instance? DBFn o))
 
 (defn build-db-fn
   ([fn-map] (build-db-fn nil fn-map))
