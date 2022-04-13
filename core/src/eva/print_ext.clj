@@ -17,8 +17,10 @@
    top-level java Eva interfaces."
   (:require [clojure.pprint :as pp]
             [quartermaster.core :as qu])
-  (:import (eva Connection Database Entity Log Datom)
-           (java.io Writer)))
+  (:import (eva Connection Database Log Datom)
+           (java.io Writer)
+           (clojure.lang IPersistentMap IRecord)
+           (java.util Map)))
 
 ;; Print Implementations for API-Exposed Objects
 (defmethod print-method Database
@@ -29,27 +31,27 @@
    [^Database db]
    (print db))
 
-(prefer-method print-method Database clojure.lang.IPersistentMap)
-(prefer-method print-method Database clojure.lang.IRecord)
-(prefer-method print-method Database java.util.Map)
-(prefer-method pp/simple-dispatch Database clojure.lang.IPersistentMap)
+(prefer-method print-method Database IPersistentMap)
+(prefer-method print-method Database IRecord)
+(prefer-method print-method Database Map)
+(prefer-method pp/simple-dispatch Database IPersistentMap)
 
-(defmethod print-method Connection [conn ^java.io.Writer w]
+(defmethod print-method Connection [conn ^Writer w]
   (.write w (str "#Connection{:version 1, :status " (qu/status conn)"}")))
 
 (defmethod pp/simple-dispatch Connection [conn]
   (print conn))
 
-(prefer-method print-method Connection clojure.lang.IPersistentMap)
-(prefer-method print-method Connection clojure.lang.IRecord)
-(prefer-method print-method Connection java.util.Map)
-(prefer-method pp/simple-dispatch Connection clojure.lang.IPersistentMap)
+(prefer-method print-method Connection IPersistentMap)
+(prefer-method print-method Connection IRecord)
+(prefer-method print-method Connection Map)
+(prefer-method pp/simple-dispatch Connection IPersistentMap)
 
 (defmethod pp/simple-dispatch Log
   [^Log log]
   (print log))
 
-(prefer-method pp/simple-dispatch Log clojure.lang.IPersistentMap)
+(prefer-method pp/simple-dispatch Log IPersistentMap)
 
 (defmethod print-method Datom [^Datom d ^Writer writer]
   (.write writer "#datom[")
@@ -64,9 +66,9 @@
   (print-method (.added d) writer)
   (.write writer "]"))
 
-(prefer-method print-method Datom clojure.lang.IRecord)
-(prefer-method print-method Datom clojure.lang.IPersistentMap)
-(prefer-method print-method Datom java.util.Map)
+(prefer-method print-method Datom IRecord)
+(prefer-method print-method Datom IPersistentMap)
+(prefer-method print-method Datom Map)
 
 (defmethod pp/simple-dispatch Datom
   [^Datom d]
@@ -74,6 +76,6 @@
                             :suffix ""
                             (pp/write-out [(.e d) (.a d) (.v d) (.tx d) (.added d)])))
 
-(prefer-method pp/simple-dispatch Datom clojure.lang.IRecord)
-(prefer-method pp/simple-dispatch Datom clojure.lang.IPersistentMap)
-(prefer-method pp/simple-dispatch Datom java.util.Map)
+(prefer-method pp/simple-dispatch Datom IRecord)
+(prefer-method pp/simple-dispatch Datom IPersistentMap)
+(prefer-method pp/simple-dispatch Datom Map)
