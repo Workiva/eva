@@ -16,7 +16,7 @@
   "Abstraction point for modifying built in database functions."
   (:require [eva.attribute]
             [eva.core :as core]
-            [eva.error :refer [raise deferror-group]]
+            [eva.error :refer [deferror-group]]
             [eva.entity-id :refer [entid-strict]])
   (:import [eva Database Attribute]))
 
