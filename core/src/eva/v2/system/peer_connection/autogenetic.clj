@@ -14,29 +14,25 @@
 
 (ns eva.v2.system.peer-connection.autogenetic
   "Local connection for an EVA Database. Supports in-memory, h2 and sqlite."
-  (:require [eva.core :as core]
-            [eva.v2.system.peer-connection.core :as peer]
+  (:require [eva.v2.system.peer-connection.core :as peer]
             [eva.v2.system.transactor.core :as transactor]
             [eva.v2.system.indexing.core :as indexing]
             [eva.v2.system.database-catalogue.core :as catalog]
             [eva.v2.database.core :as database]
             [eva.v2.storage.system :as storage]
-            [eva.v2.storage.block-store :as blocks]
             [eva.v2.storage.value-store.core :as values]
             [eva.v2.storage.block-store.types :as store-type]
             [eva.v2.storage.block-store.impl.memory :as memory]
             [eva.v2.storage.block-store.impl.sql :as sql]
-            [eva.v2.storage.value-store.core :as values]
             [eva.v2.storage.value-store.manager :as vs-manager]
             [eva.v2.messaging.address :as address]
             [quartermaster.core :as qu]
             [eva.v2.utils.spec :refer [conform-spec]]
-            [utiliva.uuid :refer [squuid]]
-            [eva.error :refer [insist with-api-error-handling]]
+            [eva.error :refer [with-api-error-handling]]
             [eva.print-ext]
-            [clojure.spec.alpha :as s]
-            [com.stuartsierra.component :as c])
-  (:import [eva Connection]))
+            [clojure.spec.alpha :as s])
+  (:import [eva Connection]
+           (java.io File Writer)))
 
 ;;;;;;;;;;
 ;; SPEC ;;
@@ -80,7 +76,7 @@
   [config]
   {::store-type/storage-type ::store-type/sql
    ::sql/db-spec (sql/h2-db-spec
-                  (java.io.File/createTempFile
+                  (File/createTempFile
                    "eva.v2.system.peer-connection.autogenetic."
                    ".h2"))})
 
@@ -88,7 +84,7 @@
   [config]
   {::store-type/storage-type ::store-type/sql
    ::sql/db-spec (sql/sqlite-db-spec
-                  (java.io.File/createTempFile
+                  (File/createTempFile
                    "eva.v2.system.peer-connection.autogenetic."
                    ".sqlite"))})
 
@@ -153,7 +149,7 @@
   (terminate [this]
     (if (qu/terminated? this)
       this
-      (let [res-id @resource-id]
+      (let [_res-id @resource-id]
         (reset! resource-id nil)
         (qu/release connection true)
         (qu/release value-store true)
@@ -179,7 +175,7 @@
     (with-api-error-handling (.db ^Connection @connection)))
   (dbSnapshot [_]
     (with-api-error-handling (.dbSnapshot ^Connection @connection)))
-  (syncDb [this]
+  (syncDb [_]
     (with-api-error-handling (.syncDb ^Connection @connection)))
   (log [_]
     (with-api-error-handling (.log ^Connection @connection)))
@@ -195,12 +191,12 @@
     (with-api-error-handling
       (.transactAsync ^Connection @connection tx-data))))
 
-(defmethod print-method AutogeneticConnection [ac ^java.io.Writer w]
+(defmethod print-method AutogeneticConnection [ac ^Writer w]
   (.write w (str "#AutogeneticConnection{:version ", version ", :status " (qu/status ac) "}")))
 
 (qu/defmanager autogenetic-connection-manager
   :discriminator
-  (fn [user-id config] [(::database/id config) (::values/partition-id config)])
+  (fn [_ config] [(::database/id config) (::values/partition-id config)])
   :constructor
   (fn [user-id config]
     (map->AutogeneticConnection
