@@ -21,14 +21,16 @@
             [eva.entity-id :refer [permify-id tempid] :as entid]
             [eva.functions :refer [compile-db-fn]]
             [eva.attribute :as ea]
-            [eva.error :refer [raise insist]]
+            [eva.error :refer [raise]]
             [eva.value-types :refer [valid-value-type?]]
             [recide.sanex :as sanex]
             [eva.config :refer [config-strict config]]
             [recide.sanex.logging :as logging]
             [morphe.core :as d]
-            [ichnaie.core :refer [traced]])
-  (:import [java.util Date])
+            [ichnaie.core :refer [traced]]
+            [clojure.string :as string])
+  (:import [java.util Date]
+           (eva.bytes BBA))
   (:refer-clojure :exclude [group-by]))
 
 (defprotocol TxDataAccess
@@ -61,13 +63,13 @@
                   (group-by (filter add?) :e)
                   (some #(when (> (count (val %)) 1) (val %))))]
     (raise :transact-exception/cardinality-one-violation
-           (format "Cannot add multiple values for cardinality one attribute" violators)
+           (format "Cannot add multiple values for cardinality one attribute %s" violators)
            {:attribute        (into {} attr)
             :tx-data          violators
             ::sanex/sanitary? false})))
 
 (defn validate-uniqueness [attr cmds]
-  (when (and (not (empty? cmds))
+  (when (and (seq cmds)
              (not (apply distinct? (map :v cmds))))
     (raise :transact-exception/duplicate-unique-entities
            "Cannot create duplicate unique entities with the same attribute and value but different eids."
@@ -91,7 +93,7 @@
 (defn attr-bytes-size-fn [attr]
   (case (ea/value-type attr)
     :db.type/string (fn [^String s] (alength (.getBytes s "UTF-8")))
-    :db.type/bytes (fn [^eva.bytes.BBA b] (alength ^bytes (.ba b)))
+    :db.type/bytes (fn [^BBA b] (alength ^bytes (.ba b)))
     nil))
 
 (defn validate-bytes-limits [attr cmds]
@@ -114,7 +116,7 @@
                      (config :eva.transaction-pipeline.byte-size-limit)
                      violating-attr-size))))
 
-(defn generic-validation [attr report tx-data cmds]
+(defn generic-validation [attr report _ cmds]
   (when (ea/unique attr)                              (validate-uniqueness attr cmds))
   (when (= :db.cardinality/one (ea/cardinality attr)) (validate-cardinality-one attr cmds))
   (when (= :db.type/fn         (ea/value-type  attr)) (validate-db-fn attr cmds))
@@ -136,7 +138,7 @@
 (defmulti validate-attribute
   "Validates the set of commands with the given attribute against the db-before,
    modifies the report and db-after as appropriate to process the transaction."
-  (fn [attr report tx-data cmds] (ea/ident attr))
+  (fn [attr _ _ _] (ea/ident attr))
   :default "default")
 
 (defn ensure-no-retractions [cmds]
@@ -159,22 +161,22 @@
              {:tx-data cmd
               ::sanex/sanitary? false}))))
 
-(defmethod validate-attribute :db/valueType [attr report tx-data cmds]
+(defmethod validate-attribute :db/valueType [_ _ tx-data cmds]
   (ensure-no-retractions cmds)
   (doseq [cmd cmds]
     (ensure-installing-attribute tx-data cmd)))
 
-(defmethod validate-attribute :db/cardinality [_ report tx-data cmds]
+(defmethod validate-attribute :db/cardinality [_ _ tx-data cmds]
   (ensure-no-retractions cmds)
   (doseq [cmd cmds]
     (ensure-installing-attribute tx-data cmd)))
 
-(defmethod validate-attribute :db/unique [_ report tx-data cmds]
+(defmethod validate-attribute :db/unique [_ _ tx-data cmds]
   (ensure-no-retractions cmds)
   (doseq [cmd cmds]
     (ensure-installing-attribute tx-data cmd)))
 
-(defmethod validate-attribute :db/isComponent [_ report tx-data cmds]
+(defmethod validate-attribute :db/isComponent [_ _ tx-data cmds]
   (ensure-no-retractions cmds)
   (doseq [cmd cmds]
     (ensure-installing-attribute tx-data cmd)))
@@ -188,13 +190,13 @@
 (defn ->prev-tx-inst [report] (-> report :db-before :log-entry :tx-inst))
 (defn ->now [report] (-> report :meta deref :now))
 
-(defmethod validate-attribute :db/txInstant [_ report tx-data cmds]
+(defmethod validate-attribute :db/txInstant [_ report _ cmds]
   (ensure-no-retractions cmds)
   (when-not (= 1 (count cmds))
     (tx-err/raise-invalid-tx-inst
      "you cannot install two txInstants or modify another transaction's txInstant"
      {:cmds cmds ::sanex/sanitary? false}))
-  (when-not (and (= *tx-partition* (entid/partition (:e (first cmds)))))
+  (when-not (= *tx-partition* (entid/partition (:e (first cmds))))
     (tx-err/raise-invalid-tx-inst
      "tx-instants can only be installed on the new reified transaction-entity"
      {::sanex/sanitary? true}))
@@ -214,11 +216,11 @@
 
 (defn reserved-namespace? [nspace]
   (when nspace
-    (let [nspace-prefix (clojure.string/split nspace #"\.")]
+    (let [nspace-prefix (string/split nspace #"\.")]
       (contains? #{"db"} (first nspace-prefix)))))
 
 (defmethod validate-attribute :db/ident
-  [_ report tx-data cmds]
+  [_ _ _ cmds]
   (doseq [cmd cmds
           :let [nspace (namespace (:v cmd))]]
     (when (reserved-namespace? nspace)
@@ -260,7 +262,7 @@
     (= \_ (first (name ident)))))
 
 (defmethod validate-attribute :db.install/attribute
-  [_ report tx-data cmds]
+  [_ _ tx-data cmds]
   (ensure-no-retractions cmds)
   (doseq [cmd cmds
           :let [ops (get (by-eid tx-data) (:v cmd))]]
@@ -288,7 +290,7 @@
                    {:tx-data (seq ops) ::sanex/sanitary? false}))))))
 
 (defmethod validate-attribute :db.install/partition
-  [_ report tx-data cmds]
+  [_ _ tx-data cmds]
   (ensure-no-retractions cmds)
   (doseq [cmd cmds
           :let [ops (get (by-eid tx-data) (:v cmd))]]
@@ -299,25 +301,25 @@
               :missing missing
               ::sanex/sanitary? false}))))
 
-(defmethod validate-attribute :db/noHistory [_ report tx-data cmds]
+(defmethod validate-attribute :db/noHistory [_ _ _ cmds]
   (raise :transact-exception/noHistory-NYI
          "The :db/noHistory attribute property is not yet implemented."
          {:tx-data cmds
           ::sanex/sanitary? false}))
 
-(defmethod validate-attribute :db/fulltext [_ report tx-data cmds]
+(defmethod validate-attribute :db/fulltext [_ _ _ cmds]
   (raise :transact-exception/fulltext-NYI
          "The :db/fulltext attribute property is not yet implemented."
          {:tx-data cmds
           ::sanex/sanitary? false}))
 
-(defmethod validate-attribute :db.install/valueType [_ report tx-data cmds]
+(defmethod validate-attribute :db.install/valueType [_ _ _ cmds]
   (raise :transact-exception/install-valueType-NYI
          "The :db.install/valueType attribute is not yet implemented."
          {:tx-data cmds
           ::sanex/sanitary? false}))
 
-(defmethod validate-attribute "default" [attr report tx-data cmds] true)
+(defmethod validate-attribute "default" [_attr _report _tx-data _cmds] true)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Core
@@ -355,14 +357,13 @@
     :skew-window skew-window
     ::sanex/sanitary? true}))
 
-(defn current-time [] (java.util.Date.))
+(defn current-time [] (Date.))
 
 (d/defn ^{::d/aspects [traced]} validate
   "Given a report which has fully expanded, resolved ids, and eliminated
    redundancy, validate the set of changes against the :db-before."
   ([report]
-   (let [tx-inst? (atom nil)
-         prev-tx-inst (->prev-tx-inst report)
+   (let [prev-tx-inst (->prev-tx-inst report)
          now (derive-global-now raise-skew-exception
                                 (current-time)
                                 prev-tx-inst
@@ -373,7 +374,7 @@
        ;; we've validated all attributes
        (if (nil? head)
          ;; if we've validated a user-defined tx-inst we can return the report directly.
-         (if-let [tx-inst (-> report :meta deref :tx-inst)]
+         (if-let [_tx-inst (-> report :meta deref :tx-inst)]
            (note-validated report)
            ;; if we haven't, we must generate one and add it.
            (let [tx-inst-cmd (generate-tx-inst-cmd report)]
