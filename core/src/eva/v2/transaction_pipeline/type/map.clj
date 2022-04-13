@@ -14,11 +14,11 @@
 
 (ns eva.v2.transaction-pipeline.type.map
   "Defines a concrete type for Map Entity operations handled in the transaction pipeline."
-  (:require [eva.attribute :refer [unique rm_* ref-attr? card-many?
-                                   reverse-attr? rm_ cardinality]]
+  (:require [eva.attribute :refer [rm_* reverse-attr? rm_ cardinality]]
             [eva.error :refer [raise]]
             [recide.sanex :as sanex]
-            [eva.v2.transaction-pipeline.type.basic :refer [->add]])
+            [eva.v2.transaction-pipeline.type.basic :refer [->add]]
+            [clojure.string :as string])
   (:import [java.util List]
            [eva Database]))
 
@@ -29,7 +29,7 @@
 
 (defn keywordize [k]
   (cond (string? k)
-        (if (clojure.string/starts-with? k ":")
+        (if (string/starts-with? k ":")
           (keyword (subs k 1))
           (keyword k))
 
@@ -54,9 +54,6 @@
 (defn ->map-entity [db m]
   (->MapEntity db m (normalize-map-entity db m)))
 
-(defn ->normalized-map-entity [db m]
-  (->MapEntity db m m))
-
 (defn map->adds
   "Given a flattened MapEntity object, returns a list of Adds corresponding
    to the expanded entity."
@@ -80,7 +77,6 @@
                 :let [rev? (reverse-attr? a)
                       lst? (instance? List v)
                       card (cardinality db (rm_* a))
-                      card-one? (= :db.cardinality/one card)
                       card-many? (= :db.cardinality/many card)]]
             (cond
               ;; reverse pointing to a list of 'parents'
