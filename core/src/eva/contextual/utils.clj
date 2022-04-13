@@ -14,7 +14,8 @@
 
 (ns eva.contextual.utils
   (:require [clojure.string :refer [join replace]])
-  (:import [java.util.regex Pattern]))
+  (:import [java.util.regex Pattern])
+  (:refer-clojure :exclude [replace]))
 
 ;; helpers to sanitize names a bit, so code parsing them could use standard URI parsing tools
 (def ^:private replacements
