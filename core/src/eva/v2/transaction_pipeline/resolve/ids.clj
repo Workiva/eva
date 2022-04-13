@@ -24,13 +24,12 @@
             [recide.sanex :as sanex]
             [loom.graph :as lg]
             [loom.alg :as la]
-            [loom.io :as lio]
             [eva.core :as core]
             [utiliva.core :refer [partition-pmap keepcat group-by]]
             [eva.v2.transaction-pipeline.type.basic :refer [->final-retract add? retract?]]
             [morphe.core :as d]
             [ichnaie.core :refer [traced]])
-  (:import [java.util List Map]
+  (:import [java.util List]
            [eva.v2.transaction_pipeline.type.basic Add Retract])
   (:refer-clojure :exclude [group-by]))
 
