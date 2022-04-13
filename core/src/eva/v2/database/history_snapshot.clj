@@ -130,5 +130,4 @@
         ;; NOTE: we're not reusing the non-history db's impl s.t. we can have an
         ;;       independent metric for history queries.
         (metrics/with-timer historic-query-edb-timer
-          (let [res (extensions-impl db terms)]
-            res))))))
+          (extensions-impl db terms))))))
