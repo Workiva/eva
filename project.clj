@@ -42,7 +42,7 @@
                  [org.mariadb.jdbc/mariadb-java-client "1.4.6"]
                  [mysql/mysql-connector-java "5.1.45"]
                  [org.postgresql/postgresql "9.4-1206-jdbc42"]
-                 [org.clojure/math.numeric-tower "0.0.4"]
+                 [org.clojure/math.numeric-tower "0.0.5"]
                  [aysylu/loom "1.0.2" :exclusions [tailrecursion/cljs-priority-map]]
                  [org.clojure/data.fressian "1.0.0"]
                  [com.carrotsearch/java-sizeof "0.0.5"]
