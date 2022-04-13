@@ -15,23 +15,13 @@
 (ns eva.v2.transaction-pipeline.type.tx-fn
   "Defines a concrete type for transaction functions handled in the transaction pipeline."
   (:require [eva
-             [attribute :refer [resolve-attribute
-                                value-type
-                                cardinality
-                                card-many?
-                                ref-attr?]]
-             [bytes :refer [ensure-bytes-wrapped]]
-             [core :refer [select-datoms]]
-             [entity-id :refer [entid-strict
-                                temp?]]
-             [utils :refer [one]]]
+             [core :refer [select-datoms]]]
             [eva.v2.transaction-pipeline.protocols :refer [coerce-to-command]]
             [eva.v2.transaction-pipeline.error :as tpe]
             [recide.core :refer [try*]]
             [eva.core :refer [db-fn? ->fn]])
-  (:import (java.util List Map)
-           (eva Database)
-           (eva.attribute Attribute)))
+  (:import (java.util List)
+           (eva Database)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Transaction Functions
